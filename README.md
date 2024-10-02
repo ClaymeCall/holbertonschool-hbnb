@@ -22,10 +22,10 @@ Welcome to the HBnB Evolution Project, a clone of AirBnB's API crafted using Pyt
 ![App Image](https://www.mavencluster.com/blog/wp-content/uploads/2020/08/build-app-like-airbnb.jpg)
 
 ## Contributing 
-- **Clément Callejon** - [@Claymecall](https://github.com/ClaymeCall)(clement.callejon@holbertonstudents.com)
-- **David Vaucheret** - [@CoeurdArcade](https://github.com/CoeurdArcade)(david.vaucheret@holbertonstudents.com)
-- **Nicolas Martinez** - [@Bomays](https://github.com/Bomays)(nicolas.martinez@holbertonstudents.com)
-- **Louis Genty** - [@GenXwater](https://github.com/GenXwater)(louis.genty@holbertonstudents.com)
+- **Clément Callejon** - [@Claymecall](https://github.com/ClaymeCall)[@email](clement.callejon@holbertonstudents.com)
+- **David Vaucheret** - [@CoeurdArcade](https://github.com/CoeurdArcade)[@email](david.vaucheret@holbertonstudents.com)
+- **Nicolas Martinez** - [@Bomays](https://github.com/Bomays)[email](nicolas.martinez@holbertonstudents.com)
+- **Louis Genty** - [@GenXwater](https://github.com/GenXwater)[@email](louis.genty@holbertonstudents.com)
 
 # What about Part 1?
 
