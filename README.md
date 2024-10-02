@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # HBnB Project: Part 1
 AirBnB clone version Holberton School
 ## Table of Contents
@@ -353,4 +352,3 @@ to fill
 =======
 # HBnB_project
 Hosts all the files for the HBnB project.
->>>>>>> 68aaea58bc76d78f868079dc8736573c291e1f08
