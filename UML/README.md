@@ -34,7 +34,7 @@ This documentation describes the **architecture** of the application, the **busi
 The following diagram presents an overview of the application's architecture, which is divided into three main layers: **presentation**, **business logic**, and **persistence**. These layers communicate through the **Facade design pattern**, simplifying interactions between different parts of the system.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Simple%203%20High-Level%20Architecture%20diagram.png?raw=true" alt="General Architecture Diagram"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Simple%203%20High-Level%20Architecture%20diagram.png?raw=true" alt="General Architecture Diagram" width="320"/>
 </p>
 
 ### Layer Overview:
