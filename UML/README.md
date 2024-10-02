@@ -34,7 +34,7 @@ This documentation describes the **architecture** of the application, the **busi
 The following diagram presents an overview of the application's architecture, which is divided into three main layers: **presentation**, **business logic**, and **persistence**. These layers communicate through the **Facade design pattern**, simplifying interactions between different parts of the system.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Simple%203%20High-Level%20Architecture%20diagram.png?raw=true" alt="General Architecture Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Simple%203%20High-Level%20Architecture%20diagram.png?raw=true" alt="General Architecture Diagram"/>
 </p>
 
 ### Layer Overview:
@@ -72,7 +72,7 @@ The **Facade pattern** allows the **presentation layer** to interact with the **
 The following diagram describes the **main entities** of the business logic layer and the relationships between them.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/Basic%20class%20Diagram%20for%20Business%20Logic%20Layer.png?raw=true" alt="Class Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/Basic%20class%20Diagram%20for%20Business%20Logic%20Layer.png?raw=true" alt="Class Diagram"/>
 </p>
 
 ### Description of the Main Entities:
@@ -112,7 +112,7 @@ In this use case, the user registers via the API. Here are the steps:
 5. **The API** sends a confirmation to the user.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%201_%20Register%20User.png?raw=true" alt="User Registration Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%201_%20Register%20User.png?raw=true" alt="User Registration Diagram"/>
 </p>
 
 ### Place Creation
@@ -126,7 +126,7 @@ In this sequence, a user creates a new place listing.
 5. **The API** sends this confirmation to the user.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%202_%20Create%20Reservation9.png?raw=true" alt="Place Creation Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%202_%20Create%20Reservation9.png?raw=true" alt="Place Creation Diagram"/>
 </p>
 
 ### Review Submission
@@ -140,7 +140,7 @@ Here, the user submits a review for a place they have visited.
 5. **The API** sends a success message to the user, confirming the review was submitted.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%203_%20Leave%20a%20Review.png?raw=true" alt="Review Submission Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%203_%20Leave%20a%20Review.png?raw=true" alt="Review Submission Diagram"/>
 </p>
 
 ### Retrieving a List of Places
@@ -154,7 +154,7 @@ In this example, a user retrieves a list of places available in a city.
 5. **The API** sends the list of places as a response to the user.
 
 <p align="center">
-<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%204_%20Fetch%20Places%20by%20City.png?raw=true" alt="Fetching Places Diagram" width="72"/>
+<img src="https://github.com/ClaymeCall/HBnB_project/blob/main/UML/HBnB%20Sequence%20Diagram%204_%20Fetch%20Places%20by%20City.png?raw=true" alt="Fetching Places Diagram"/>
 </p>
 
 ---
