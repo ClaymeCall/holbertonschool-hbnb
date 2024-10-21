@@ -65,7 +65,7 @@ class PlaceManager:
         # Initialiser un dictionnaire pour stocker les avis par place_id
         self.reviews = {}
 
-    def create_review(self, place_id, data):
+    def add_review(self, place_id, data):
         """
         Crée un nouvel avis pour une place donnée.
 
