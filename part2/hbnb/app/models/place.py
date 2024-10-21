@@ -1,3 +1,5 @@
+from base_model import BaseModel
+
 class Basemodel:
     # Important s'assurez que le Basemodel est correctement défini
     pass
