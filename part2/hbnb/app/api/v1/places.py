@@ -79,3 +79,64 @@ class PlaceResource(Resource):
         except ValueError as e:
             api.abort(400, str(e))
 
+# Review place model
+review_model = api.model('Review', {
+    'user_id': fields.String(required=True, description='The user identifier'),
+    'text': fields.String(required=True, description='The review text'),
+    'rating': fields.Integer(required=True, description='The review rating')
+})
+
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.expect(review_model)
+    @api.response(201, 'Review successfully created')
+    @api.response(400, 'Invalid input data')
+    @api.response(404, 'Place not found')
+    def post(self, place_id):
+        """Create a new review for a place"""
+        data = request.json
+        try:
+            new_review = facade.create_review(place_id, data)
+            return new_review, 201
+        except ValueError as e:
+            api.abort(400, str(e))
+        except KeyError:
+            api.abort(404, 'Place not found')
+
+    @api.response(200, 'List of reviews retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """Retrieve a list of all reviews for a place"""
+        reviews = facade.get_reviews_by_place_id(place_id)
+        if reviews is not None:
+            return reviews, 200
+        else:
+            api.abort(404, 'Place not found')
+
+@api.route('/<place_id>/reviews/<review_id>')
+class PlaceReviewResource(Resource):
+    @api.response(200, 'Review details retrieved successfully')
+    @api.response(404, 'Review not found')
+    def get(self, place_id, review_id):
+        """Get review details by ID"""
+        review = facade.get_review_by_id(place_id, review_id)
+        if review:
+            return review, 200
+        else:
+            api.abort(404, 'Review not found')
+
+    @api.expect(review_model)
+    @api.response(200, 'Review updated successfully')
+    @api.response(404, 'Review not found')
+    @api.response(400, 'Invalid input data')
+    def put(self, place_id, review_id):
+        """Update a review's information"""
+        data = request.json
+        try:
+            updated_review = facade.update_review(place_id, review_id, data)
+            if updated_review:
+                return updated_review, 200
+            else:
+                api.abort(404, 'Review not found')
+        except ValueError as e:
+            api.abort(400, str(e))
