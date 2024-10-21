@@ -4,19 +4,6 @@ class Basemodel:
     # Important s'assurez que le Basemodel est correctement défini
     pass
 
-class Place(Basemodel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
-        super().__init__()
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner = owner
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
-        self.places = {}  # Dictionary to store places
-
     def validate_price(self, price):
         if not isinstance(price, (int, float)) or price < 0:
             raise ValueError("Price must be a non-negative number.")
