@@ -1,6 +1,19 @@
-class PlaceManager:
-    def __init__(self):
-        self.places = {}
+class Basemodel:
+    # Important s'assurez que le Basemodel est correctement défini
+    pass
+
+class Place(Basemodel):
+    def __init__(self, title, description, price, latitude, longitude, owner):
+        super().__init__()
+        self.title = title
+        self.description = description
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner
+        self.reviews = []  # List to store related reviews
+        self.amenities = []  # List to store related amenities
+        self.places = {}  # Dictionary to store places
 
     def validate_price(self, price):
         if not isinstance(price, (int, float)) or price < 0:
@@ -12,7 +25,7 @@ class PlaceManager:
 
     def create_place(self, place_data):
         # Validate input data
-        if 'name' not in place_data or 'price' not in place_data or 'latitude' not in place_data or 'longitude' not in place_data:
+        if 'title' not in place_data or 'price' not in place_data or 'latitude' not in place_data or 'longitude' not in place_data:
             raise ValueError("Missing required fields in place_data.")
 
         self.validate_price(place_data['price'])
@@ -24,7 +37,7 @@ class PlaceManager:
         # Create the place
         place = {
             'id': place_id,
-            'name': place_data['name'],
+            'title': place_data['title'],
             'price': place_data['price'],
             'latitude': place_data['latitude'],
             'longitude': place_data['longitude'],
@@ -61,10 +74,6 @@ class PlaceManager:
         place.update(place_data)
         return place
 
-    def __init__(self):
-        # Initialiser un dictionnaire pour stocker les avis par place_id
-        self.reviews = {}
-
     def add_review(self, place_id, data):
         """
         Crée un nouvel avis pour une place donnée.
@@ -72,6 +81,9 @@ class PlaceManager:
         :param place_id: Identifiant de la place
         :param data: Données de l'avis
         """
+        if place_id not in self.places:
+            raise ValueError("Place with the given ID does not exist.")
+
         if place_id not in self.reviews:
             self.reviews[place_id] = []
 
@@ -127,3 +139,4 @@ class PlaceManager:
                 review['data'] = data
                 return review
         return None
+
