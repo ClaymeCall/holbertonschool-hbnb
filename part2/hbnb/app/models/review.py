@@ -12,30 +12,30 @@ places_list = []
 
 class Review(BaseModel):
     def __init__(self, place, user, rating, text):
+        """Initialize Review class with BaseModel"""
         super().__init__()
         self.id = str(uuid.uuid4())  # Unique Id generated of the review
         self.text = text
-        self.rating = rating
+        self._rating = None
         self.place = place  # Place being reviewed
         self.user = user  # User who wrote review
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
 
-        self.rating = rating
+
+        self.rating = rating  # Setter use
         place.add_review(self)
 
     # Rating
     @property
     def rating(self):
         """Return rating"""
-        return self.rating
+        return self._rating
 
     @rating.setter
     def rating(self, value):
         """Frame the rating"""
-        if value > 0 or value > 5:
+        if value < 0 or value > 5:
             raise ValueError("Rating must be from 0 to 5")
-        self.rating = value
+        self._rating = value
 
     # Validation process before authorizing review
     def validate_user(self, user_id):
