@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 '''
-This module defines the Business Logic User class.
+This module defines the Business Logic User class
 '''
 from base_model import BaseModel
 
