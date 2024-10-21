@@ -80,17 +80,11 @@ class PlaceManager:
         place.update(place_data)
         return place
 
+class ReviewManager:
     def __init__(self):
-        # Initialiser un dictionnaire pour stocker les avis par place_id
         self.reviews = {}
 
-    def create_review(self, place_id, data):
-        """
-        Crée un nouvel avis pour une place donnée.
-
-        :param place_id: Identifiant de la place
-        :param data: Données de l'avis
-        """
+    def add_review(self, place_id, data):
         if place_id not in self.reviews:
             self.reviews[place_id] = []
 
@@ -103,24 +97,11 @@ class PlaceManager:
         return review
 
     def get_reviews_by_place_id(self, place_id):
-        """
-        Récupère tous les avis pour une place donnée.
-
-        :param place_id: Identifiant de la place
-        :return: Liste des avis
-        """
         if place_id not in self.reviews:
             return []
         return self.reviews[place_id]
 
     def get_review_by_id(self, place_id, review_id):
-        """
-        Récupère un avis spécifique par son identifiant.
-
-        :param place_id: Identifiant de la place
-        :param review_id: Identifiant de l'avis
-        :return: Avis spécifique ou None si non trouvé
-        """
         if place_id not in self.reviews:
             return None
 
@@ -130,14 +111,6 @@ class PlaceManager:
         return None
 
     def update_review(self, place_id, review_id, data):
-        """
-        Met à jour un avis spécifique.
-
-        :param place_id: Identifiant de la place
-        :param review_id: Identifiant de l'avis
-        :param data: Nouvelles données de l'avis
-        :return: Avis mis à jour ou None si non trouvé
-        """
         if place_id not in self.reviews:
             return None
 
