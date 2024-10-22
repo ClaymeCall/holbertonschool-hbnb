@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
-"""This model defines the Business review class"""
-import uuid
-from datetime import datetime
-from part2.hbnb.app.models.base_model import BaseModel
-from part2.hbnb.app.models import place
+from base_model import BaseModel
 
 
 users_list = []
@@ -14,15 +9,12 @@ class Review(BaseModel):
     def __init__(self, place, user, rating, text):
         """Initialize Review class with BaseModel"""
         super().__init__()
-        self.id = str(uuid.uuid4())  # Unique Id generated of the review
         self.text = text
         self._rating = None
         self.place = place  # Place being reviewed
         self.user = user  # User who wrote review
 
-
         self.rating = rating  # Setter use
-        place.add_review(self)
 
     # Rating
     @property
