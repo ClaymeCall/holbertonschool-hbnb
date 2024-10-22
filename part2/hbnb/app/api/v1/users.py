@@ -1,7 +1,9 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from flask import jsonify
 
 api = Namespace('users', description='User operations')
+users = {}
 
 # Define the user model for input validation and documentation
 user_model = api.model('User', {
@@ -30,7 +32,6 @@ class UserList(Resource):
         new_user = facade.create_user(user_data)
         return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
 
-
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
@@ -41,3 +42,12 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+
+
+@api.route('/api/v1/users')
+class UserList(Resource):
+    def get_user(self, username):
+        if not users.get(username):
+            return jsonify({"error": "User not found"}), 404
+        return users[username]
+        
