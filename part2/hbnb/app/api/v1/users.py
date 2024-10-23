@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-
-
+from flask import jsonify, request
 
 api = Namespace("users", description="User operations")
 
@@ -27,7 +26,6 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, "User successfully created")
     @api.response(400, "Email already registered")
-    @api.response(400, "Invalid input data")
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -46,19 +44,18 @@ class UserList(Resource):
             "last_name": new_user.last_name,
             "email": new_user.email,
         }, 201
+    
 
-
-@api.route("/", methods=['GET'])
-class UserList(Resource):
-    @api.response(200, "list of users retrieved is a success")
-    @api.response(404, "user not found")
+    @api.response(200, "User details retrieved successfully")
+    @api.response(404, "User not found")
     def get(self):
-        """retrieve users list"""
         users_list = [user.__dict__ for user in facade.get_all_users()]
-        return users_list
+        if not users_list:
+            return {"No users found"}, 404        
+        return jsonify(users_list)
 
 
-@api.route("/<user_id>", methods=['GET'])
+@api.route("/<user_id>")
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
@@ -75,21 +72,12 @@ class UserResource(Resource):
             "email": user.email,
         }, 200
 
-@api.route("/<user_id>", methods=['PUT'])
-class UserResource(Resource):
-    @api.response(200, "User details updating successfully")
-    @api.response(404, "User not found")
-    @api.response(400, "Invalid input data")
     def put(self, user_id):
-        """Update user details by ID"""
-
         user_data = api.payload
-        if not user_data:
-            return {"error": "Invalid input data"}, 400
+        user = facade.get_user(user_id)
 
-        existing_user = facade.get_user(user_id)
-        if not existing_user:
-            return {"error": "user not found"}, 404
-        
-        updated_user = [user.__dict__ for user in facade.update_user()]
-        return updated_user
+        if not user:
+            return {"error": "User not found"}, 404
+
+        facade.user_repo.update(user_id, user_data)
+        return user_data
