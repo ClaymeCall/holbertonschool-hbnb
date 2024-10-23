@@ -11,7 +11,7 @@ class Repository(ABC):
 
     @abstractmethod
     def get_all(self):
-        pass
+        return self
 
     @abstractmethod
     def update(self, obj_id, data):
