@@ -1,10 +1,10 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from flask import request
+from flask import jsonify, request
+
 
 
 api = Namespace("users", description="User operations")
-users = {}
 
 # Define the user model for input validation and documentation
 user_model = api.model(
@@ -23,27 +23,16 @@ user_model = api.model(
 facade = HBnBFacade()
 
 
-@api.route("/")
+@api.route("/", methods=['POST'])
 class UserList(Resource):
     @api.expect(user_model, validate=True)
-    @api.response(200, "list of users retrieved is a success")
-    def get(self):
-        """retrieve users list"""
-        users = facade.get_all_users()
-        return [
-            {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email
-            } for user in users
-            ]
-
     @api.response(201, "User successfully created")
     @api.response(400, "Email already registered")
     @api.response(400, "Invalid input data")
     def post(self):
         """Register a new user"""
         user_data = api.payload
+        """request.get_json()"""
 
         if not user_data:
             return {"error": "invalid input data. json required"}, 400
@@ -59,10 +48,19 @@ class UserList(Resource):
             "last_name": new_user.last_name,
             "email": new_user.email,
         }, 201
-    
 
 
-@api.route("/<user_id>")
+@api.route("/", methods=['GET'])
+class UserList(Resource):
+    @api.response(200, "list of users retrieved is a success")
+    @api.response(404, "user not found")
+    def get(self):
+        """retrieve users list"""
+        users_list = [user.__dict__ for user in facade.get_all_users()]
+        return jsonify(users_list)
+
+
+@api.route("/<user_id>", methods=['GET'])
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
