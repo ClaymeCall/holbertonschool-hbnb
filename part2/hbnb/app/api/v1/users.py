@@ -1,9 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from flask import jsonify
+from flask import jsonify, request
 
 api = Namespace("users", description="User operations")
-users = {}
 
 # Define the user model for input validation and documentation
 user_model = api.model(
@@ -22,7 +21,7 @@ user_model = api.model(
 facade = HBnBFacade()
 
 
-@api.route("/")
+@api.route("/", methods=['POST'])
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, "User successfully created")
@@ -30,7 +29,7 @@ class UserList(Resource):
     @api.response(400, "Invalid input data")
     def post(self):
         """Register a new user"""
-        user_data = api.payload
+        user_data = request.get_json()
 
         # Simulate email uniqueness check
         # (to be replaced by real validation with persistence)
@@ -45,6 +44,14 @@ class UserList(Resource):
             "last_name": new_user.last_name,
             "email": new_user.email,
         }, 201
+
+@api.route("/", methods=['GET'])
+class DisplayUsers(Resource):
+    @api.response(200, "User details retrieved successfully")
+    @api.response(404, "User not found")
+    def get(self):
+        users_list = [user.__dict__ for user in facade.get_all_users()]
+        return jsonify(users_list)
 
 
 @api.route("/<user_id>")
@@ -64,9 +71,3 @@ class UserResource(Resource):
         }, 200
 
 
-@api.route("/api/v1/users")
-class UserList(Resource):
-    def get_user(self, username):
-        if not users.get(username):
-            return jsonify({"error": "User not found"}), 404
-        return users[username]
