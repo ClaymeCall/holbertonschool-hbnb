@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from flask import request
 
 
 api = Namespace("users", description="User operations")
@@ -31,7 +32,6 @@ class UserList(Resource):
         users = facade.get_all_users()
         return [
             {
-            "id": user.id,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email
@@ -45,8 +45,9 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Simulate email uniqueness check
-        # (to be replaced by real validation with persistence)
+        if not user_data:
+            return {"error": "invalid input data. json required"}, 400
+
         existing_user = facade.get_user_by_email(user_data["email"])
         if existing_user:
             return {"error": "Email already registered"}, 400
@@ -76,3 +77,4 @@ class UserResource(Resource):
             "last_name": user.last_name,
             "email": user.email,
         }, 200
+
