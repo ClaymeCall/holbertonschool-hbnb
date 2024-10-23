@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from flask import jsonify, request
 
 
 
@@ -32,7 +31,6 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
-        """request.get_json()"""
 
         if not user_data:
             return {"error": "invalid input data. json required"}, 400
@@ -57,13 +55,14 @@ class UserList(Resource):
     def get(self):
         """retrieve users list"""
         users_list = [user.__dict__ for user in facade.get_all_users()]
-        return jsonify(users_list)
+        return users_list
 
 
 @api.route("/<user_id>", methods=['GET'])
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
+    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
@@ -76,3 +75,21 @@ class UserResource(Resource):
             "email": user.email,
         }, 200
 
+@api.route("/<user_id>", methods=['PUT'])
+class UserResource(Resource):
+    @api.response(200, "User details updating successfully")
+    @api.response(404, "User not found")
+    @api.response(400, "Invalid input data")
+    def put(self, user_id):
+        """Update user details by ID"""
+
+        user_data = api.payload
+        if not user_data:
+            return {"error": "Invalid input data"}, 400
+
+        existing_user = facade.get_user(user_id)
+        if not existing_user:
+            return {"error": "user not found"}, 404
+        
+        updated_user = [user.__dict__ for user in facade.update_user()]
+        return updated_user
