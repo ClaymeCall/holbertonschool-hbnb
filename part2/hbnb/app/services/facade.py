@@ -1,60 +1,13 @@
 from app.persistence.repository import InMemoryRepository
-from app.models.user import User
-
-class InMemoryRepository:
-    def __init__(self):
-        self.data = {}
-
-    def add(self, item):
-        self.data[item['id']] = item
-
-    def get(self, item_id):
-        return self.data.get(item_id)
-
-    def update(self, item_id, item_data):
-        if item_id in self.data:
-            self.data[item_id].update(item_data)
-        else:
-            raise ValueError(f"Item with ID {item_id} not found")
-
-    def delete(self, item_id):
-        if item_id in self.data:
-            del self.data[item_id]
-        else:
-            raise ValueError(f"Item with ID {item_id} not found")
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
-<<<<<<< HEAD
-        # Validate user data
-        required_fields = ['username', 'email', 'password']
-        for field in required_fields:
-            if field not in user_data:
-                raise ValueError(f"Missing required field: {field}")
-
-        # Assign a unique ID to the new user
-        user_id = len(self.user_repo.data) + 1
-        user_data['id'] = user_id
-
-        # Add the new user to the repository
-        self.user_repo.add(user_data)
-        return user_data
-
-    def get_place(self, place_id):
-        # Fetch the place by ID from the repository
-        place = self.place_repo.get(place_id)
-        if place is None:
-            raise ValueError(f"Place with ID {place_id} not found")
-        return place
-
-class PlaceManager:
-    def __init__(self):
-        self.places = {}
-        self.next_id = 1
-=======
         user = User(**user_data)
         self.user_repo.add(user)
         return user
@@ -65,150 +18,245 @@ class PlaceManager:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
 
+class AmenityService:
+    def __init__(self):
+        self.amenities = {}
+        self.next_id = 1
 
     def create_amenity(self, amenity_data):
-    # Placeholder for logic to create an amenity
-        pass
+        """
+        Create a new amenity.
+
+        :param amenity_data: Dictionary containing amenity details.
+        :return: Dictionary containing the created amenity with its ID.
+        """
+        amenity_id = self.next_id
+        self.next_id += 1
+        amenity_data['id'] = amenity_id
+        self.amenities[amenity_id] = amenity_data
+        return amenity_data
 
     def get_amenity(self, amenity_id):
-        # Placeholder for logic to retrieve an amenity by ID
-        pass
+        """
+        Retrieve an amenity by its ID.
+
+        :param amenity_id: ID of the amenity to retrieve.
+        :return: Dictionary containing the amenity details, or None if not found.
+        """
+        return self.amenities.get(amenity_id)
 
     def get_all_amenities(self):
-        # Placeholder for logic to retrieve all amenities
-        pass
->>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
+        """
+        Retrieve all amenities.
+
+        :return: List of dictionaries containing all amenities.
+        """
+        return list(self.amenities.values())
 
     def update_amenity(self, amenity_id, amenity_data):
-        # Placeholder for logic to update an amenity
-        pass
+        """
+        Update an existing amenity.
 
+        :param amenity_id: ID of the amenity to update.
+        :param amenity_data: Dictionary containing updated amenity details.
+        :return: Dictionary containing the updated amenity, or None if not found.
+        """
+        if amenity_id in self.amenities:
+            self.amenities[amenity_id].update(amenity_data)
+            return self.amenities[amenity_id]
+        return None
 
-<<<<<<< HEAD
-    def _validate_place_data(self, place_data):
-        required_fields = ['name', 'price', 'latitude', 'longitude']
-        for field in required_fields:
-            if field not in place_data:
-                raise ValueError(f"Missing required field: {field}")
+# Example usage:
+amenity_service = AmenityService()
 
-        self.validate_price(place_data['price'])
-        self.validate_coordinates(place_data['latitude'], place_data['longitude'])
+# Create a new amenity
+new_amenity = amenity_service.create_amenity({'name': 'WiFi', 'description': 'High-speed internet'})
+print(new_amenity)
+
+# Retrieve an amenity by ID
+retrieved_amenity = amenity_service.get_amenity(new_amenity['id'])
+print(retrieved_amenity)
+
+# Retrieve all amenities
+all_amenities = amenity_service.get_all_amenities()
+print(all_amenities)
+
+# Update an amenity
+updated_amenity = amenity_service.update_amenity(new_amenity['id'], {'description': 'Free high-speed internet'})
+print(updated_amenity)
+
+class AirbnbClone:
+    def __init__(self):
+        self.places = {}
 
     def create_place(self, place_data):
-        self._validate_place_data(place_data)
+        """
+        Create a new place with the given data.
+        :param place_data: Dictionary containing place details.
+        """
+        # Validate place data
+        if not self._validate_place_data(place_data):
+            raise ValueError("Invalid place data")
 
-        place_id = self.next_id
-        self.next_id += 1
+        place_id = len(self.places) + 1
+        self.places[place_id] = place_data
+        return place_id
 
-        place = {
-            'id': place_id,
-            'name': place_data['name'],
-            'price': place_data['price'],
-            'latitude': place_data['latitude'],
-            'longitude': place_data['longitude'],
-            'owner': place_data.get('owner', None),
-            'amenities': place_data.get('amenities', [])
-        }
-
-        self.places[place_id] = place
+    def get_place(self, place_id):
+        """
+        Retrieve a place by its ID.
+        :param place_id: ID of the place to retrieve.
+        :return: Dictionary containing place details.
+        """
+        place = self.places.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
         return place
 
-    def get_place(self, place_id):
-        if place_id not in self.places:
-            raise ValueError(f"Place with ID {place_id} not found")
-
-        return self.places[place_id]
-=======
-    def create_place(self, place_data):
-        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        pass
-
-    def get_place(self, place_id):
-        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
-        pass
->>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
-
     def get_all_places(self):
-        # Placeholder for logic to retrieve all places
-        pass
+        """
+        Retrieve all places.
+        :return: List of dictionaries containing place details.
+        """
+        return list(self.places.values())
 
     def update_place(self, place_id, place_data):
-<<<<<<< HEAD
+        """
+        Update a place with the given data.
+        :param place_id: ID of the place to update.
+        :param place_data: Dictionary containing updated place details.
+        """
         if place_id not in self.places:
-            raise ValueError(f"Place with ID {place_id} not found")
+            raise ValueError("Place not found")
 
-        if 'price' in place_data:
-            self.validate_price(place_data['price'])
-        if 'latitude' in place_data or 'longitude' in place_data:
-            self.validate_coordinates(place_data.get('latitude', self.places[place_id]['latitude']),
-                                     place_data.get('longitude', self.places[place_id]['longitude']))
+        # Validate place data
+        if not self._validate_place_data(place_data):
+            raise ValueError("Invalid place data")
 
         self.places[place_id].update(place_data)
-        return self.places[place_id]
 
-class ReviewManager:
-    def __init__(self):
-        self.reviews = {}
+    def _validate_place_data(self, place_data):
+        """
+        Validate the place data.
+        :param place_data: Dictionary containing place details.
+        :return: Boolean indicating if the data is valid.
+        """
+        required_fields = ['name', 'price', 'latitude', 'longitude', 'owner', 'amenities']
+        for field in required_fields:
+            if field not in place_data:
+                return False
 
-    def add_review(self, place_id, data):
-        if place_id not in self.reviews:
-            self.reviews[place_id] = []
+        if not (isinstance(place_data['price'], (int, float)) and place_data['price'] >= 0):
+            return False
 
-        review_id = len(self.reviews[place_id]) + 1
-        review = {
-            'id': review_id,
-            'data': data
-        }
-        self.reviews[place_id].append(review)
-        return review
+        if not (-90 <= place_data['latitude'] <= 90):
+            return False
 
-    def get_reviews_by_place_id(self, place_id):
-        return self.reviews.get(place_id, [])
+        if not (-180 <= place_data['longitude'] <= 180):
+            return False
 
-    def get_review_by_id(self, place_id, review_id):
-        if place_id not in self.reviews:
-            return None
+        return True
 
-        for review in self.reviews[place_id]:
-            if review['id'] == review_id:
-                return review
-        return None
+# Example usage:
+airbnb = AirbnbClone()
 
-    def update_review(self, place_id, review_id, data):
-        if place_id not in self.reviews:
-            return None
+# Create a new place
+place_id = airbnb.create_place({
+    'name': 'Cozy Apartment',
+    'price': 100,
+    'latitude': 37.7749,
+    'longitude': -122.4194,
+    'owner': 'John Doe',
+    'amenities': ['WiFi', 'Kitchen', 'Parking']
+})
 
-        for review in self.reviews[place_id]:
-            if review['id'] == review_id:
-                review['data'] = data
-                return review
-        return None
-=======
-        # Placeholder for logic to update a place
-        pass
+# Retrieve the created place
+place = airbnb.get_place(place_id)
+print(place)
+
+# Update the place
+airbnb.update_place(place_id, {
+    'price': 120,
+    'amenities': ['WiFi', 'Kitchen', 'Parking', 'Pool']
+})
+
+# Retrieve all places
+all_places = airbnb.get_all_places()
+print(all_places)
+
+class ReviewService:
+    def __init__(self, db):
+        self.db = db
 
     def create_review(self, review_data):
-    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
-        pass
+        # Validate input data
+        if not all(key in review_data for key in ('user_id', 'place_id', 'rating', 'comment')):
+            raise ValueError("Missing required fields in review_data")
 
+        user_id = review_data['user_id']
+        place_id = review_data['place_id']
+        rating = review_data['rating']
+        comment = review_data['comment']
+
+        # Validate rating
+        if not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+
+        # Placeholder for actual database insertion logic
+        review_id = self.db.insert_review(user_id, place_id, rating, comment)
+
+        return review_id
 
     def get_review(self, review_id):
-        # Placeholder for logic to retrieve a review by ID
-        pass
+        # Placeholder for actual database retrieval logic
+        review = self.db.get_review_by_id(review_id)
+
+        if not review:
+            raise ValueError("Review not found")
+
+        return review
 
     def get_all_reviews(self):
-        # Placeholder for logic to retrieve all reviews
-        pass
+        # Placeholder for actual database retrieval logic
+        reviews = self.db.get_all_reviews()
+        return reviews
 
     def get_reviews_by_place(self, place_id):
-        # Placeholder for logic to retrieve all reviews for a specific place
-        pass
+        # Placeholder for actual database retrieval logic
+        reviews = self.db.get_reviews_by_place_id(place_id)
+        return reviews
 
     def update_review(self, review_id, review_data):
-        # Placeholder for logic to update a review
-        pass
->>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
+        # Validate input data
+        if not any(key in review_data for key in ('rating', 'comment')):
+            raise ValueError("No fields to update in review_data")
+
+        # Placeholder for actual database update logic
+        updated = self.db.update_review(review_id, review_data)
+
+        if not updated:
+            raise ValueError("Review not found or update failed")
+
+        return updated
 
     def delete_review(self, review_id):
-        # Placeholder for logic to delete a review
-        pass
+        # Placeholder for actual database deletion logic
+        deleted = self.db.delete_review(review_id)
+
+        if not deleted:
+            raise ValueError("Review not found or deletion failed")
+
+        return deleted
+
+# Example usage:
+# db = Database()  # Assuming you have a Database class that handles the actual DB operations
+# review_service = ReviewService(db)
+# review_data = {
+#     'user_id': 1,
+#     'place_id': 101,
+#     'rating': 4,
+#     'comment': 'Great place!'
+# }
+# review_id = review_service.create_review(review_data)
+# print(review_id)
+
