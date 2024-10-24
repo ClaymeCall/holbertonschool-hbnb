@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from app.services import facade
 
 api = Namespace('reviews', description='Review operations')
 
@@ -11,20 +11,6 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-place_model = api.model('Place', {
-    'title': fields.String(required=True, description='Title of the place'),
-    'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner of the place'),
-    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
-    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
-})
-
-facade = HBnBFacade()
-
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
@@ -32,14 +18,21 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        # Placeholder for the logic to register a new review
-        pass
+        data = api.payload
+        try:
+            new_review = facade.create_review(data)
+            return new_review, 201
+        except Exception as e:
+            api.abort(400, str(e))
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        # Placeholder for logic to return a list of all reviews
-        pass
+        try:
+            reviews = facade.get_all_reviews()
+            return reviews, 200
+        except Exception as e:
+            api.abort(400, str(e))
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -47,8 +40,14 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        # Placeholder for the logic to retrieve a review by ID
-        pass
+        try:
+            review = facade.get_review_by_id(review_id)
+            if review:
+                return review, 200
+            else:
+                api.abort(404, 'Review not found')
+        except Exception as e:
+            api.abort(400, str(e))
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -56,15 +55,28 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
-        # Placeholder for the logic to update a review by ID
-        pass
+        data = api.payload
+        try:
+            updated_review = facade.update_review(review_id, data)
+            if updated_review:
+                return updated_review, 200
+            else:
+                api.abort(404, 'Review not found')
+        except Exception as e:
+            api.abort(400, str(e))
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        # Placeholder for the logic to delete a review
-        pass
+        try:
+            success = facade.delete_review(review_id)
+            if success:
+                return {'message': 'Review deleted successfully'}, 200
+            else:
+                api.abort(404, 'Review not found')
+        except Exception as e:
+            api.abort(400, str(e))
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -72,5 +84,12 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        # Placeholder for logic to return a list of reviews for a place
-        pass
+        try:
+            reviews = facade.get_reviews_by_place_id(place_id)
+            if reviews:
+                return reviews, 200
+            else:
+                api.abort(404, 'Place not found')
+        except Exception as e:
+            api.abort(400, str(e))
+
