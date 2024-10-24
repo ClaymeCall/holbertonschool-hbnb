@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields, abort
 from app.services import facade
 from flask import Flask
 from flask_restx import Api
-from app.api.places import api as places_api
+from app.api.v1.places import api as places_api
 
 app = Flask(__name__)
 api = Api(app)
