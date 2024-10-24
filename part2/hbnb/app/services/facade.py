@@ -5,9 +5,6 @@ from app.models.place import Place
 from app.models.amenity import Amenity
 
 
-
-
-
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
