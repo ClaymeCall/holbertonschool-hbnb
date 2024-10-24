@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from app.services import facade
 
 api = Namespace('places', description='Place operations')
 
@@ -24,11 +24,8 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner details'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
-
-facade = HBnBFacade()
 
 @api.route('/')
 class PlaceList(Resource):
@@ -37,14 +34,17 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
+        data = api.payload
         # Placeholder for the logic to register a new place
-        pass
+        new_place = facade.create_place(data)
+        return new_place, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
         # Placeholder for logic to return a list of all places
-        pass
+        places = facade.get_all_places()
+        return places, 200
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -53,7 +53,11 @@ class PlaceResource(Resource):
     def get(self, place_id):
         """Get place details by ID"""
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        place = facade.get_place_by_id(place_id)
+        if place:
+            return place, 200
+        else:
+            api.abort(404, 'Place not found')
 
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
@@ -61,5 +65,11 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
+        data = api.payload
         # Placeholder for the logic to update a place by ID
-        pass
+        updated_place = facade.update_place(place_id, data)
+        if updated_place:
+            return updated_place, 200
+        else:
+            api.abort(404, 'Place not found')
+
