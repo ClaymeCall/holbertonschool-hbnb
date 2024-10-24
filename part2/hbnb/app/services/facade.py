@@ -120,42 +120,55 @@ class AirbnbClone:
         """
         return list(self.places.values())
 
-    def update_place(self, place_id, place_data):
-        """
-        Update a place with the given data.
-        :param place_id: ID of the place to update.
-        :param place_data: Dictionary containing updated place details.
-        """
-        if place_id not in self.places:
-            raise ValueError("Place not found")
+def update_place(self, place_id, place_data):
+    """
+    Update a place with the given data.
+    :param place_id: ID of the place to update.
+    :param place_data: Dictionary containing updated place details.
+    """
+    if place_id not in self.places:
+        raise ValueError(f"Place with ID {place_id} not found")
 
-        # Validate place data
-        if not self._validate_place_data(place_data):
-            raise ValueError("Invalid place data")
+    # Validate place data
+    if not self._validate_place_data(place_data):
+        raise ValueError("Invalid place data")
 
-        self.places[place_id].update(place_data)
+    self.places[place_id].update(place_data)
 
-    def _validate_place_data(self, place_data):
-        """
-        Validate the place data.
-        :param place_data: Dictionary containing place details.
-        :return: Boolean indicating if the data is valid.
-        """
-        required_fields = ['name', 'price', 'latitude', 'longitude', 'owner', 'amenities']
-        for field in required_fields:
-            if field not in place_data:
-                return False
-
-        if not (isinstance(place_data['price'], (int, float)) and place_data['price'] >= 0):
+def _validate_place_data(self, place_data):
+    """
+    Validate the place data.
+    :param place_data: Dictionary containing place details.
+    :return: Boolean indicating if the data is valid.
+    """
+    required_fields = ['name', 'price', 'latitude', 'longitude', 'owner', 'amenities']
+    for field in required_fields:
+        if field not in place_data:
+            print(f"Missing required field: {field}")
             return False
 
-        if not (-90 <= place_data['latitude'] <= 90):
-            return False
+    if not (isinstance(place_data['price'], (int, float)) and place_data['price'] >= 0):
+        print("Invalid price")
+        return False
 
-        if not (-180 <= place_data['longitude'] <= 180):
-            return False
+    if not (-90 <= place_data['latitude'] <= 90):
+        print("Invalid latitude")
+        return False
 
-        return True
+    if not (-180 <= place_data['longitude'] <= 180):
+        print("Invalid longitude")
+        return False
+
+    # Additional validations for owner and amenities can be added here
+    if not isinstance(place_data['owner'], str):
+        print("Invalid owner")
+        return False
+
+    if not isinstance(place_data['amenities'], list):
+        print("Invalid amenities")
+        return False
+
+    return True
 
 # Example usage:
 airbnb = AirbnbClone()
