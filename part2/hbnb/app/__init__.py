@@ -8,5 +8,7 @@ def create_app():
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
 
     api.add_namespace(users_ns, path='/api/v1/users')
+
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
+
     return app
