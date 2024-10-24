@@ -1,14 +1,24 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.review import Review
+from app.models.place import Place
+from app.models.amenity import Amenity
+
+
+
+
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
-        user = User(**user_data)
-        self.user_repo.add(user)
-        return user
+        new_user = User(**user_data)
+        self.user_repo.add(new_user)
+        return new_user
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
@@ -54,8 +64,9 @@ class HBnBFacade:
         pass
 
     def create_review(self, review_data):
-    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
-        pass
+        new_review = Review(**review_data)
+        self.review_repo.add(new_review)
+        return new_review
 
 
     def get_review(self, review_id):

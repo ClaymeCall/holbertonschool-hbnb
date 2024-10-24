@@ -30,8 +30,7 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Simulate email uniqueness check
-        # (to be replaced by real validation with persistence)
+        # Check uniqueness of input email in persistance layer
         existing_user = facade.get_user_by_email(user_data["email"])
         if existing_user:
             return {"error": "Email already registered"}, 400
