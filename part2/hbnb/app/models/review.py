@@ -1,11 +1,29 @@
-from base_model import BaseModel
-
+""" holds class Review"""
+import models
+from models.base_model import BaseModel, Base
+from os import getenv
+import sqlalchemy
+from sqlalchemy import Column, String, ForeignKey
 
 users_list = []
 places_list = []
 
+class Review(BaseModel, Base):
+    """Representation of Review """
+    if models.storage_t == 'db':
+        __tablename__ = 'reviews'
+        place_id = Column(String(60), ForeignKey('places.id'), nullable=False)
+        user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+        text = Column(String(1024), nullable=False)
+    else:
+        place_id = ""
+        user_id = ""
+        text = ""
 
-class Review(BaseModel):
+    def __init__(self, *args, **kwargs):
+        """initializes Review"""
+        super().__init__(*args, **kwargs)
+
     def __init__(self, place, user, rating, text):
         """Initialize Review class with BaseModel"""
         super().__init__()
@@ -42,11 +60,12 @@ class Review(BaseModel):
         for place in places_list:
             if place.place_id == place_id:
                 return place
-        raise ValueError("User {} does not exist".format(place_id))
+        raise ValueError("Place {} does not exist".format(place_id))
 
     # Get review
     def print_review(self):
-        """Print the review as a readble string"""
+        """Print the review as a readable string"""
         return "Review by {} for {}: {} > Rating: {}".format(
             self.user.name, self.place.name, self.text, self.rating
         )
+
