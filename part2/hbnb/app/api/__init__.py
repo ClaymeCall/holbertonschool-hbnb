@@ -2,10 +2,10 @@ from flask import Blueprint
 from flask_restx import Api
 
 # Import namespaces
-from .users import api as users_ns
-from .places import api as places_ns
-from .amenities import api as amenities_ns
-from .reviews import api as reviews_ns
+from .v1.users import api as users_ns
+from .v1.places import api as places_ns
+from .v1.amenities import api as amenities_ns
+from .v1.reviews import api as reviews_ns
 
 # Create a Blueprint for the API
 api_bp = Blueprint('api', __name__)
