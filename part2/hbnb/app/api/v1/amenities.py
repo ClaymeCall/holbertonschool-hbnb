@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from app.services import facade
+from flask import request
 
 api = Namespace('amenities', description='Amenity operations')
 
@@ -8,8 +9,6 @@ amenity_model = api.model('Amenity', {
     'name': fields.String(required=True, description='Name of the amenity')
 })
 
-facade = HBnBFacade()
-
 @api.route('/')
 class AmenityList(Resource):
     @api.expect(amenity_model)
@@ -17,14 +16,30 @@ class AmenityList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new amenity"""
+        data = request.json
+        name = data.get('name')
+
+        if not name:
+            api.abort(400, 'Invalid input data')
+
         # Placeholder for the logic to register a new amenity
-        pass
+        new_amenity = facade.create_amenity(name)
+
+        if new_amenity:
+            return {'message': 'Amenity successfully created', 'amenity': new_amenity}, 201
+        else:
+            api.abort(400, 'Failed to create amenity')
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
         """Retrieve a list of all amenities"""
         # Placeholder for logic to return a list of all amenities
-        pass
+        amenities = facade.get_all_amenities()
+
+        if amenities:
+            return {'amenities': amenities}, 200
+        else:
+            api.abort(404, 'No amenities found')
 
 @api.route('/<amenity_id>')
 class AmenityResource(Resource):
@@ -33,7 +48,12 @@ class AmenityResource(Resource):
     def get(self, amenity_id):
         """Get amenity details by ID"""
         # Placeholder for the logic to retrieve an amenity by ID
-        pass
+        amenity = facade.get_amenity_by_id(amenity_id)
+
+        if amenity:
+            return {'amenity': amenity}, 200
+        else:
+            api.abort(404, 'Amenity not found')
 
     @api.expect(amenity_model)
     @api.response(200, 'Amenity updated successfully')
@@ -41,5 +61,17 @@ class AmenityResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
         """Update an amenity's information"""
+        data = request.json
+        name = data.get('name')
+
+        if not name:
+            api.abort(400, 'Invalid input data')
+
         # Placeholder for the logic to update an amenity by ID
-        pass
+        updated_amenity = facade.update_amenity(amenity_id, name)
+
+        if updated_amenity:
+            return {'message': 'Amenity updated successfully', 'amenity': updated_amenity}, 200
+        else:
+            api.abort(404, 'Amenity not found')
+
