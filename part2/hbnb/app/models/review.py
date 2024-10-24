@@ -1,20 +1,14 @@
-from base_model import BaseModel
-
-
-users_list = []
-places_list = []
+from app.models.base_model import BaseModel
 
 
 class Review(BaseModel):
-    def __init__(self, place, user, rating, text):
+    def __init__(self, text, rating, place, user):
         """Initialize Review class with BaseModel"""
         super().__init__()
         self.text = text
-        self._rating = None
+        self.rating = rating  # Setter use
         self.place = place  # Place being reviewed
         self.user = user  # User who wrote review
-
-        self.rating = rating  # Setter use
 
     # Rating
     @property
@@ -30,21 +24,21 @@ class Review(BaseModel):
         self._rating = value
 
     # Validation process before authorizing review
-    def validate_user(self, user_id):
+    def validate_user(self, user_list, user_id):
         """Validating user method to authorize adding review"""
-        for user in users_list:
+        for user in user_list:
             if user.user_id == user_id:
                 return user
         raise ValueError("User {} does not exist".format(user_id))
 
-    def validate_place(self, place_id):
+    def validate_place(self, place_list, place_id):
         """Validating place method to authorize adding review"""
-        for place in places_list:
+        for place in place_list:
             if place.place_id == place_id:
                 return place
         raise ValueError("User {} does not exist".format(place_id))
 
-    # Get review
+    # Get a review by ID
     def print_review(self):
         """Print the review as a readble string"""
         return "Review by {} for {}: {} > Rating: {}".format(
