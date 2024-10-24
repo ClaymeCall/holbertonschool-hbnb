@@ -1,5 +1,27 @@
 from app.persistence.repository import InMemoryRepository
 
+class InMemoryRepository:
+    def __init__(self):
+        self.data = {}
+
+    def add(self, item):
+        self.data[item['id']] = item
+
+    def get(self, item_id):
+        return self.data.get(item_id)
+
+    def update(self, item_id, item_data):
+        if item_id in self.data:
+            self.data[item_id].update(item_data)
+        else:
+            raise ValueError(f"Item with ID {item_id} not found")
+
+    def delete(self, item_id):
+        if item_id in self.data:
+            del self.data[item_id]
+        else:
+            raise ValueError(f"Item with ID {item_id} not found")
+
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
@@ -7,19 +29,32 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
 
-    # Placeholder method for creating a user
     def create_user(self, user_data):
-        # Logic will be implemented in later tasks
-        pass
+        # Validate user data
+        required_fields = ['username', 'email', 'password']
+        for field in required_fields:
+            if field not in user_data:
+                raise ValueError(f"Missing required field: {field}")
 
-    # Placeholder method for fetching a place by ID
+        # Assign a unique ID to the new user
+        user_id = len(self.user_repo.data) + 1
+        user_data['id'] = user_id
+
+        # Add the new user to the repository
+        self.user_repo.add(user_data)
+        return user_data
+
     def get_place(self, place_id):
-        # Logic will be implemented in later tasks
-        pass
+        # Fetch the place by ID from the repository
+        place = self.place_repo.get(place_id)
+        if place is None:
+            raise ValueError(f"Place with ID {place_id} not found")
+        return place
 
 class PlaceManager:
     def __init__(self):
         self.places = {}
+        self.next_id = 1
 
     def validate_price(self, price):
         if not isinstance(price, (int, float)) or price < 0:
@@ -29,18 +64,21 @@ class PlaceManager:
         if not (-90 <= latitude <= 90) or not (-180 <= longitude <= 180):
             raise ValueError("Latitude must be between -90 and 90, and longitude must be between -180 and 180.")
 
-    def create_place(self, place_data):
-        # Validate input data
-        if 'name' not in place_data or 'price' not in place_data or 'latitude' not in place_data or 'longitude' not in place_data:
-            raise ValueError("Missing required fields in place_data.")
+    def _validate_place_data(self, place_data):
+        required_fields = ['name', 'price', 'latitude', 'longitude']
+        for field in required_fields:
+            if field not in place_data:
+                raise ValueError(f"Missing required field: {field}")
 
         self.validate_price(place_data['price'])
         self.validate_coordinates(place_data['latitude'], place_data['longitude'])
 
-        # Generate a unique ID for the place
-        place_id = len(self.places) + 1
+    def create_place(self, place_data):
+        self._validate_place_data(place_data)
 
-        # Create the place
+        place_id = self.next_id
+        self.next_id += 1
+
         place = {
             'id': place_id,
             'name': place_data['name'],
@@ -56,29 +94,25 @@ class PlaceManager:
 
     def get_place(self, place_id):
         if place_id not in self.places:
-            raise ValueError("Place with the given ID does not exist.")
+            raise ValueError(f"Place with ID {place_id} not found")
 
-        place = self.places[place_id]
-        return place
+        return self.places[place_id]
 
     def get_all_places(self):
         return list(self.places.values())
 
     def update_place(self, place_id, place_data):
         if place_id not in self.places:
-            raise ValueError("Place with the given ID does not exist.")
+            raise ValueError(f"Place with ID {place_id} not found")
 
-        # Validate input data
         if 'price' in place_data:
             self.validate_price(place_data['price'])
         if 'latitude' in place_data or 'longitude' in place_data:
             self.validate_coordinates(place_data.get('latitude', self.places[place_id]['latitude']),
                                      place_data.get('longitude', self.places[place_id]['longitude']))
 
-        # Update the place
-        place = self.places[place_id]
-        place.update(place_data)
-        return place
+        self.places[place_id].update(place_data)
+        return self.places[place_id]
 
 class ReviewManager:
     def __init__(self):
@@ -97,9 +131,7 @@ class ReviewManager:
         return review
 
     def get_reviews_by_place_id(self, place_id):
-        if place_id not in self.reviews:
-            return []
-        return self.reviews[place_id]
+        return self.reviews.get(place_id, [])
 
     def get_review_by_id(self, place_id, review_id):
         if place_id not in self.reviews:
