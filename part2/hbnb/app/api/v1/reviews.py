@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from part2.hbnb.app.models import base_model
 
 api = Namespace('reviews', description='Review operations')
 
@@ -12,16 +11,16 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-place_model = api.model('Place', {
-    'title': fields.String(required=True, description='Title of the place'),
-    'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(base_model, description='Owner of the place'),
-    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
-})
+# place_model = api.model('Place', {
+#     'title': fields.String(required=True, description='Title of the place'),
+#     'description': fields.String(description='Description of the place'),
+#     'price': fields.Float(required=True, description='Price per night'),
+#     'latitude': fields.Float(required=True, description='Latitude of the place'),
+#     'longitude': fields.Float(required=True, description='Longitude of the place'),
+#     'owner_id': fields.String(required=True, description='ID of the owner'),
+#     'owner': fields.Nested(base_model, description='Owner of the place'),
+#     'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
+# })
 
 facade = HBnBFacade()
 
@@ -32,8 +31,16 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        # Placeholder for the logic to register a new review
-        pass
+        review_data = api.payload
+
+        new_review = facade.create_review(review_data)
+        return {
+            "text": new_review.text,
+            "rating": new_review.rating,
+            "user_id": new_review.user.user_id,
+            "place_id": new_review.place.place_id,
+        }, 201
+
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
