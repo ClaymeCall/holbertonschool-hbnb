@@ -49,25 +49,6 @@ class AmenityService:
             return self.amenities[amenity_id]
         return None
 
-# Example usage:
-amenity_service = AmenityService()
-
-# Create a new amenity
-new_amenity = amenity_service.create_amenity({'name': 'WiFi', 'description': 'High-speed internet'})
-print(new_amenity)
-
-# Retrieve an amenity by ID
-retrieved_amenity = amenity_service.get_amenity(new_amenity['id'])
-print(retrieved_amenity)
-
-# Retrieve all amenities
-all_amenities = amenity_service.get_all_amenities()
-print(all_amenities)
-
-# Update an amenity
-updated_amenity = amenity_service.update_amenity(new_amenity['id'], {'description': 'Free high-speed internet'})
-print(updated_amenity)
-
 class AirbnbClone:
     def __init__(self):
         self.places = {}
@@ -133,35 +114,6 @@ class AirbnbClone:
                 return False
 
         return True
-
-# Example usage
-airbnb = AirbnbClone()
-
-# Create a new place
-place_id = airbnb.create_place({
-    'name': 'Cozy Apartment',
-    'price': 100,
-    'latitude': 37.7749,
-    'longitude': -122.4194,
-    'owner': 'John Doe',
-    'amenities': ['WiFi', 'Kitchen', 'Parking']
-})
-
-# Retrieve the created place
-place = airbnb.get_place(place_id)
-print(place)
-
-# Update the place
-airbnb.update_place(place_id, {
-    'price': 120,
-    'amenities': ['WiFi', 'Kitchen', 'Parking', 'Pool']
-})
-
-# Retrieve all places
-all_places = airbnb.get_all_places()
-print(all_places)
-
-class ReviewService:
     def __init__(self, db):
         self.db = db
 
@@ -208,16 +160,4 @@ class ReviewService:
         if not deleted:
             raise ValueError("Review not found or deletion failed")
         return deleted
-
-# Example usage:
-# db = Database()  # Assuming you have a Database class that handles the actual DB operations
-# review_service = ReviewService(db)
-# review_data = {
-#     'user_id': 1,
-#     'place_id': 101,
-#     'rating': 4,
-#     'comment': 'Great place!'
-# }
-# review_id = review_service.create_review(review_data)
-# print(review_id)
 
