@@ -1,24 +1,42 @@
 from base_model import BaseModel
+from user import User
+from review import Review
 
-class Basemodel:
-    # Important s'assurez que le Basemodel est correctement défini
-    pass
+class Place(BaseModel):
+    def __init__(
+        self,
+        title=None,
+        name=None,
+        description=None,
+        price=None,
+        latitude=None,
+        longitude=None,
+        owner=None,
+    ):
+        """Initialize the Place class with both places and reviews dic"""
+        super().__init__()
+        self.title = title
+        self.name = name
+        self.description = description
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner
+        self.reviews = []  # List to store related reviews
+        self.amenities = []  # List to store related amenities
 
-    def validate_price(self, price):
-        if not isinstance(price, (int, float)) or price < 0:
-            raise ValueError("Price must be a non-negative number.")
+    def add_review(self, review):
+        """Add a review to the place."""
+        self.reviews.append(review)
 
-    def validate_coordinates(self, latitude, longitude):
-        if not (-90 <= latitude <= 90) or not (-180 <= longitude <= 180):
-            raise ValueError("Latitude must be between -90 and 90, and longitude must be between -180 and 180.")
+    def add_amenity(self, amenity):
+        """Add an amenity to the place."""
+        self.amenities.append(amenity)
 
     def create_place(self, place_data):
         # Validate input data
         if 'title' not in place_data or 'price' not in place_data or 'latitude' not in place_data or 'longitude' not in place_data:
             raise ValueError("Missing required fields in place_data.")
-
-        self.validate_price(place_data['price'])
-        self.validate_coordinates(place_data['latitude'], place_data['longitude'])
 
         # Generate a unique ID for the place
         place_id = len(self.places) + 1

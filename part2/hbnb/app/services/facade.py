@@ -1,4 +1,5 @@
 from app.persistence.repository import InMemoryRepository
+from app.models.user import User
 
 class InMemoryRepository:
     def __init__(self):
@@ -25,11 +26,9 @@ class InMemoryRepository:
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
+<<<<<<< HEAD
         # Validate user data
         required_fields = ['username', 'email', 'password']
         for field in required_fields:
@@ -55,15 +54,37 @@ class PlaceManager:
     def __init__(self):
         self.places = {}
         self.next_id = 1
+=======
+        user = User(**user_data)
+        self.user_repo.add(user)
+        return user
 
-    def validate_price(self, price):
-        if not isinstance(price, (int, float)) or price < 0:
-            raise ValueError("Price must be a non-negative number.")
+    def get_user(self, user_id):
+        return self.user_repo.get(user_id)
 
-    def validate_coordinates(self, latitude, longitude):
-        if not (-90 <= latitude <= 90) or not (-180 <= longitude <= 180):
-            raise ValueError("Latitude must be between -90 and 90, and longitude must be between -180 and 180.")
+    def get_user_by_email(self, email):
+        return self.user_repo.get_by_attribute('email', email)
 
+
+    def create_amenity(self, amenity_data):
+    # Placeholder for logic to create an amenity
+        pass
+
+    def get_amenity(self, amenity_id):
+        # Placeholder for logic to retrieve an amenity by ID
+        pass
+
+    def get_all_amenities(self):
+        # Placeholder for logic to retrieve all amenities
+        pass
+>>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
+
+    def update_amenity(self, amenity_id, amenity_data):
+        # Placeholder for logic to update an amenity
+        pass
+
+
+<<<<<<< HEAD
     def _validate_place_data(self, place_data):
         required_fields = ['name', 'price', 'latitude', 'longitude']
         for field in required_fields:
@@ -97,11 +118,22 @@ class PlaceManager:
             raise ValueError(f"Place with ID {place_id} not found")
 
         return self.places[place_id]
+=======
+    def create_place(self, place_data):
+        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
+        pass
+
+    def get_place(self, place_id):
+        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
+        pass
+>>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
 
     def get_all_places(self):
-        return list(self.places.values())
+        # Placeholder for logic to retrieve all places
+        pass
 
     def update_place(self, place_id, place_data):
+<<<<<<< HEAD
         if place_id not in self.places:
             raise ValueError(f"Place with ID {place_id} not found")
 
@@ -151,4 +183,32 @@ class ReviewManager:
                 review['data'] = data
                 return review
         return None
+=======
+        # Placeholder for logic to update a place
+        pass
 
+    def create_review(self, review_data):
+    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
+        pass
+
+
+    def get_review(self, review_id):
+        # Placeholder for logic to retrieve a review by ID
+        pass
+
+    def get_all_reviews(self):
+        # Placeholder for logic to retrieve all reviews
+        pass
+
+    def get_reviews_by_place(self, place_id):
+        # Placeholder for logic to retrieve all reviews for a specific place
+        pass
+
+    def update_review(self, review_id, review_data):
+        # Placeholder for logic to update a review
+        pass
+>>>>>>> d1d0ebd96edd01586f5e2001e6196d4116b38318
+
+    def delete_review(self, review_id):
+        # Placeholder for logic to delete a review
+        pass

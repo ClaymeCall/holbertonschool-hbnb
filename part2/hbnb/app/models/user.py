@@ -1,8 +1,4 @@
-#!/usr/bin/python3
-'''
-This module defines the Business Logic User class.
-'''
-from base_model import BaseModel
+from app.models.base_model import BaseModel
 import re
 
 # This regex is used to verify valid emails.
