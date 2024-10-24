@@ -1,9 +1,14 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.amenity import Amenity
+from flask_restx import Namespace
+
+api = Namespace("users", description="User operations")
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -22,19 +27,33 @@ class HBnBFacade:
 
     def create_amenity(self, amenity_data):
     # Placeholder for logic to create an amenity
-        pass
+        amenity = Amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
+
 
     def get_amenity(self, amenity_id):
         # Placeholder for logic to retrieve an amenity by ID
-        pass
+        return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
         # Placeholder for logic to retrieve all amenities
-        pass
+        amenities = self.amenity_repo.get_all()
+        for amenity in amenities:
+            for key, value in amenity.__dict__.items():
+                if isinstance(value, list):
+                    amenity.__dict__[key] = value
+        return amenities
 
     def update_amenity(self, amenity_id, amenity_data):
         # Placeholder for logic to update an amenity
-        pass
+        amenity = self.get_amenity(amenity_id)
+
+        if not amenity:
+            return {"error": "Amenity not found"}, 404
+
+        self.amenity_repo.update(amenity_id, amenity_data)
+        return amenity
 
 
     def create_place(self, place_data):
