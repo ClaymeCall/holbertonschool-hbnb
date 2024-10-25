@@ -1,14 +1,10 @@
-from flask_restx import Namespace, Resource, fields, abort
+from flask import Flask, request
+from flask_restx import Api, Namespace, Resource, fields, abort
 from app.services import facade
-from flask import Flask
-from flask_restx import Api
 from app.api.v1.places import api as places_api
 
 app = Flask(__name__)
 api = Api(app)
-
-# Add the namespace to the API
-api.add_namespace(places_api, path='/api')
 
 # Define the namespace for places
 places_api = Namespace('places', description='Place operations')
@@ -55,7 +51,7 @@ class PlaceList(Resource):
     @places_api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        data = places_api.payload
+        data = request.json
         try:
             new_place = facade.create_place(data)
             return new_place, 201
@@ -92,7 +88,7 @@ class PlaceResource(Resource):
     @places_api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        data = places_api.payload
+        data = request.json
         try:
             updated_place = facade.update_place(place_id, data)
             if updated_place:
@@ -103,6 +99,9 @@ class PlaceResource(Resource):
             abort(400, str(e))
         except Exception as e:
             abort(500, str(e))
+
+# Add the namespace to the API
+api.add_namespace(places_api, path='/api')
 
 if __name__ == '__main__':
     app.run(debug=True)
