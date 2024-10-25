@@ -1,30 +1,26 @@
-from base_model import BaseModel
-from user import User
-from amenity import Amenity
-from review import Review
+from app.models.base_model import BaseModel
+from app.models.user import User
+from app.models.amenity import Amenity
+from app.models.review import Review
 
 
 class Place(BaseModel):
     def __init__(
         self,
-        id,
         title,
         description=None,
         price=None,
         latitude=None,
         longitude=None,
+        owner_id=None,
         owner=None,
+        amenities=None
     ):
         """Initialize the Place class with title, description, location, price and owner"""
         super().__init__()
 
         self.reviews = []
-        self.amenities = []
-
-        #Valid ID
-        if not isinstance(id, str):
-            raise ValueError("ID must be a string")
-        self.id = id
+        self.amenities = amenities if amenities is not None else []
 
         #valid Title
         if not isinstance(title, str) or len(title) > 1000:
@@ -55,11 +51,17 @@ class Place(BaseModel):
 
         # Valid Longitude
         if longitude is not None:
-            if not isinstance(latitude, (int, float)):
+            if not isinstance(longitude, (int, float)):
                 raise ValueError("Longitude must be a number")
-            if not (-90 <= latitude <= 90):
+            if not (-180 <= longitude <= 180):
                 raise ValueError("Longitude must be between -180.0° and 180.0°")
         self.longitude = longitude
+
+        # Valid owner_id
+        if owner_id is not None:
+            if not isinstance(owner_id, str):
+                raise ValueError("Owner ID must be a valid string")
+        self.owner_id = owner_id
 
         # Valid owner
         if owner is not None:

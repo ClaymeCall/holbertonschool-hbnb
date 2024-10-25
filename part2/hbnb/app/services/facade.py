@@ -2,7 +2,6 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
-from app.api.v1 import places
 from flask_restx import Namespace
 
 
@@ -98,7 +97,7 @@ class HBnBFacade:
     def get_all_places(self):
         # Placeholder for logic to retrieve all places
         """Retrieves all places"""
-        place = self.place_repo.get_all()
+        places = self.place_repo.get_all()
         for place in places:
             place.owner = self.get_user(place.owner_id)
             place.amenities = [self.get_amenity(amenity_id) for amenity_id in place.amenities]
