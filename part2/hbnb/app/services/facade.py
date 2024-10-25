@@ -23,7 +23,12 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
     
     def get_all_users(self):
-        return self.user_repo.get_all()
+        users = self.user_repo.get_all()
+        for user in users:
+            for key, value in user.__dict__.items():
+                if isinstance(value, list):
+                    user.__dict__[key] = value
+        return users
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
@@ -41,7 +46,6 @@ class HBnBFacade:
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        # Placeholder for logic to retrieve all amenities
         amenities = self.amenity_repo.get_all()
         for amenity in amenities:
             for key, value in amenity.__dict__.items():

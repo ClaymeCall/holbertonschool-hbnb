@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
-from flask import jsonify, request
+from flask import jsonify
 
 api = Namespace("amenities", description='Amenity operations')
 
@@ -18,7 +18,6 @@ class AmenityList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new amenity"""
-        # Placeholder for the logic to register a new amenity
         amenity_data = api.payload
 
         existing_amenity = facade.get_amenity(amenity_data.get('id'))
@@ -35,8 +34,7 @@ class AmenityList(Resource):
     @api.response(404, "No amenities found")
     def get(self):
         """Retrieve a list of all amenities"""
-        # Placeholder for logic to return a list of all amenities
-        
+
         amenities_list = facade.get_all_amenities()
 
         if not amenities_list:
@@ -50,7 +48,6 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     def get(self, amenity_id):
         """Get amenity details by ID"""
-        # Placeholder for the logic to retrieve an amenity by ID
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {"error": "Amenity not found"}, 404
@@ -65,7 +62,6 @@ class AmenityResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
         """Update an amenity's information"""
-        # Placeholder for the logic to update an amenity by ID
         amenity_data = api.payload
         if not amenity_data or not amenity_data.get("name"):
             return {"error": "Invalid input data"}, 400
