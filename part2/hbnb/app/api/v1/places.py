@@ -1,15 +1,25 @@
-from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
+from flask_restx import Namespace, Resource, fields, abort
+from app.services import facade
+from flask import Flask
+from flask_restx import Api
+from app.api.v1.places import api as places_api
 
-api = Namespace('places', description='Place operations')
+app = Flask(__name__)
+api = Api(app)
+
+# Add the namespace to the API
+api.add_namespace(places_api, path='/api')
+
+# Define the namespace for places
+places_api = Namespace('places', description='Place operations')
 
 # Define the models for related entities
-amenity_model = api.model('PlaceAmenity', {
+amenity_model = places_api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
     'name': fields.String(description='Name of the amenity')
 })
 
-user_model = api.model('PlaceUser', {
+user_model = places_api.model('PlaceUser', {
     'id': fields.String(description='User ID'),
     'first_name': fields.String(description='First name of the owner'),
     'last_name': fields.String(description='Last name of the owner'),
@@ -17,49 +27,83 @@ user_model = api.model('PlaceUser', {
 })
 
 # Define the place model for input validation and documentation
-place_model = api.model('Place', {
+place_model = places_api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(user_model, description='Owner details'),
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
-facade = HBnBFacade()
+place_response_model = places_api.model('PlaceResponse', {
+    'id': fields.String(description='Place ID'),
+    'title': fields.String(description='Title of the place'),
+    'description': fields.String(description='Description of the place'),
+    'price': fields.Float(description='Price per night'),
+    'latitude': fields.Float(description='Latitude of the place'),
+    'longitude': fields.Float(description='Longitude of the place'),
+    'owner': fields.Nested(user_model, description='Owner details'),
+    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities')
+})
 
-@api.route('/')
+@places_api.route('/')
 class PlaceList(Resource):
-    @api.expect(place_model)
-    @api.response(201, 'Place successfully created')
-    @api.response(400, 'Invalid input data')
+    @places_api.expect(place_model)
+    @places_api.response(201, 'Place successfully created', place_response_model)
+    @places_api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
-        pass
+        data = places_api.payload
+        try:
+            new_place = facade.create_place(data)
+            return new_place, 201
+        except ValueError as e:
+            abort(400, str(e))
 
-    @api.response(200, 'List of places retrieved successfully')
+    @places_api.response(200, 'List of places retrieved successfully', [place_response_model])
     def get(self):
         """Retrieve a list of all places"""
-        # Placeholder for logic to return a list of all places
-        pass
+        try:
+            places = facade.get_all_places()
+            return places, 200
+        except Exception as e:
+            abort(500, str(e))
 
-@api.route('/<place_id>')
+@places_api.route('/<place_id>')
 class PlaceResource(Resource):
-    @api.response(200, 'Place details retrieved successfully')
-    @api.response(404, 'Place not found')
+    @places_api.response(200, 'Place details retrieved successfully', place_response_model)
+    @places_api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        try:
+            place = facade.get_place_by_id(place_id)
+            if place:
+                return place, 200
+            else:
+                abort(404, 'Place not found')
+        except Exception as e:
+            abort(500, str(e))
 
-    @api.expect(place_model)
-    @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
-    @api.response(400, 'Invalid input data')
+    @places_api.expect(place_model)
+    @places_api.response(200, 'Place updated successfully', place_response_model)
+    @places_api.response(404, 'Place not found')
+    @places_api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        # Placeholder for the logic to update a place by ID
-        pass
+        data = places_api.payload
+        try:
+            updated_place = facade.update_place(place_id, data)
+            if updated_place:
+                return updated_place, 200
+            else:
+                abort(404, 'Place not found')
+        except ValueError as e:
+            abort(400, str(e))
+        except Exception as e:
+            abort(500, str(e))
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
