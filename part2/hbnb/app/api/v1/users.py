@@ -21,7 +21,7 @@ user_model = api.model(
 facade = HBnBFacade()
 
 
-@api.route("/")
+@api.route("/", methods=['POST'])
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, "User successfully created")
@@ -30,8 +30,9 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Simulate email uniqueness check
-        # (to be replaced by real validation with persistence)
+        if not user_data:
+            return {"error": "invalid input data. json required"}, 400
+
         existing_user = facade.get_user_by_email(user_data["email"])
         if existing_user:
             return {"error": "Email already registered"}, 400
@@ -58,6 +59,7 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
+    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
