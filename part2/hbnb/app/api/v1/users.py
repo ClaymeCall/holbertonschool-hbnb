@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
+from app.models import user
 from app.services.facade import HBnBFacade
-from flask import jsonify, request
+from flask import jsonify
 
 api = Namespace("users", description="User operations")
 
@@ -33,7 +34,7 @@ class UserList(Resource):
         if not user_data:
             return {"error": "invalid input data. json required"}, 400
 
-        existing_user = facade.get_user_by_email(user_data["email"])
+        existing_user = facade.get_user_by_email(user_data.get("email"))
         if existing_user:
             return {"error": "Email already registered"}, 400
 
@@ -49,10 +50,14 @@ class UserList(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
     def get(self):
-        users_list = [user.__dict__ for user in facade.get_all_users()]
+        """Retrieve a list of all users"""
+
+        users_list = facade.get_all_users()
+
         if not users_list:
             return {"No users found"}, 404        
-        return jsonify(users_list)
+
+        return jsonify([user.__dict__ for user in users_list])
 
 
 @api.route("/<user_id>")
