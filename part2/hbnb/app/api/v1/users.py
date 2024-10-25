@@ -21,7 +21,7 @@ user_model = api.model(
 facade = HBnBFacade()
 
 
-@api.route("/")
+@api.route("/", methods=['POST'])
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, "User successfully created")
@@ -57,6 +57,7 @@ class UserList(Resource):
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
+    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
