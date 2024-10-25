@@ -5,15 +5,18 @@ from flask import jsonify
 api = Namespace("amenities", description='Amenity operations')
 
 # Define the amenity model for input validation and documentation
-amenity_model = api.model('Amenity', {
+amenity_model = api.model(
+    'Amenity',
+    {
     'name': fields.String(required=True, description='Name of the amenity')
-})
+    },
+)
 
 facade = HBnBFacade()
 
 @api.route('/')
 class AmenityList(Resource):
-    @api.expect(amenity_model)
+    @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
