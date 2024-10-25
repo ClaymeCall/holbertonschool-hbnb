@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 from flask import jsonify, request
 
-api = Namespace('amenities', description='Amenity operations')
+api = Namespace("amenities", description='Amenity operations')
 
 # Define the amenity model for input validation and documentation
 amenity_model = api.model('Amenity', {

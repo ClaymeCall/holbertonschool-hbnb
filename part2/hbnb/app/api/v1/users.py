@@ -21,7 +21,7 @@ user_model = api.model(
 facade = HBnBFacade()
 
 
-@api.route("/", methods=['POST'])
+@api.route("/")
 class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, "User successfully created")
