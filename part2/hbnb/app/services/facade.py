@@ -1,7 +1,10 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.place import Place
+from app.api.v1 import places
 from flask_restx import Namespace
+
 
 api = Namespace("users", description="User operations")
 
@@ -9,6 +12,7 @@ class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -58,19 +62,58 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        pass
+        """ Create new place from place data,
+        take a dict of place data, validate owner, retrieves associated amenities
+        and add the new plac to the repo"""
+        try:
+            place = Place(**place_data)
+            owner = self.get_user(place.owner_id)
+            if not owner:
+                raise ValueError("Owner not found")
+            
+            amenity_ids = place_data.get("amenities", [])
+
+            place.amenities = []
+            for amenity_id in amenity_ids:
+                amenity = self.get_amenity(amenity_id)
+                place.amenities.append(amenity)
+        
+            self.place_repo.add(place)
+            return place
+        except ValueError as e:
+            return str(e)
+    
 
     def get_place(self, place_id):
         # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        """retrieves the place by id"""
+        place = self.place_repo.get(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+        
+        place.owner = self.get_user(place.owner_id)
+        place.amenities = [self.get_amenity(amenity_id) for amenity_id in place.amenities]
+        return place
 
     def get_all_places(self):
         # Placeholder for logic to retrieve all places
-        pass
+        """Retrieves all places"""
+        place = self.place_repo.get_all()
+        for place in places:
+            place.owner = self.get_user(place.owner_id)
+            place.amenities = [self.get_amenity(amenity_id) for amenity_id in place.amenities]
+        return places
 
     def update_place(self, place_id, place_data):
         # Placeholder for logic to update a place
-        pass
+        """Retrieve a place by id to update it"""
+        place = self.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        self.place_repo.update(place_id, place_data)
+        return self.get_place(place_id)
+    
 
     def create_review(self, review_data):
     # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
