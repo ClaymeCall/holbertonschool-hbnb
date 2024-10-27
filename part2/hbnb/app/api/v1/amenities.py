@@ -36,12 +36,15 @@ class AmenityList(Resource):
     def get(self):
         """Retrieve a list of all amenities"""
 
-        amenities_list = facade.get_all_amenities()
+        amenity_list = facade.get_all_amenities()
 
-        if not amenities_list:
-            return {"message": "No amenities found"}, 404
+        # If there are amenities, return them as JSON
+        if amenity_list:
+            return jsonify(amenity_list)
 
-        return jsonify([amenity.__dict__ for amenity in amenities_list])
+        # Base case if no amenities were found
+        return {"message": "No amenities found"}, 404
+
 
 @api.route('/<amenity_id>')
 class AmenityResource(Resource):
