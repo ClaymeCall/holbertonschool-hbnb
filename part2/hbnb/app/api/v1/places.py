@@ -64,7 +64,7 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
              return {"error": "Place not found"}, 404
-         return {
+        return {
                  "id": place.id,
                  "name": place.name,
                  "description": place.description,
