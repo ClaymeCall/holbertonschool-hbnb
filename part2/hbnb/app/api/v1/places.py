@@ -62,7 +62,7 @@ class PlaceResource(Resource):
     def get(self, place_id):
         """Get place details by ID"""
         place = facade.get_place(place_id)
-         if not place:
+        if not place:
              return {"error": "Place not found"}, 404
          return {
                  "id": place.id,
