@@ -23,15 +23,13 @@ class AmenityList(Resource):
         """Register a new amenity"""
         amenity_data = api.payload
 
-        existing_amenity = facade.get_amenity(amenity_data.get('id'))
-        if existing_amenity:
-            return {"error": "Invalid input data"}, 400
-        
-        new_amenity = facade.create_amenity(amenity_data)
-        return {
-            "id": new_amenity.id,
-            "name": new_amenity.name
-        }, 201
+        # Catching errors happening at Amenity instanciation
+        try:
+            new_amenity = facade.create_amenity(amenity_data)
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+        return new_amenity.to_dict()            
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(404, "No amenities found")

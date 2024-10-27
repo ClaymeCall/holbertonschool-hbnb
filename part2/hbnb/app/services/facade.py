@@ -52,10 +52,16 @@ class HBnBFacade:
         return user_to_update
 
     def create_amenity(self, amenity_data):
-    # Placeholder for logic to create an amenity
-        amenity = Amenity(**amenity_data)
-        self.amenity_repo.add(amenity)
-        return amenity
+        # Checking amenity name uniqueness
+        existing_amenity = self.amenity_repo.get_by_attribute('name', amenity_data.get('name'))
+        if existing_amenity:
+            raise ValueError("Amenity already registered")
+        new_amenity = Amenity(**amenity_data)
+
+        # Create the new amenity and add it to the repo
+        self.amenity_repo.add(new_amenity)
+
+        return new_amenity
 
 
     def get_amenity(self, amenity_id):
