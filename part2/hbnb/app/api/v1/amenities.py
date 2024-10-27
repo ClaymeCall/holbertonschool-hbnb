@@ -58,20 +58,16 @@ class AmenityResource(Resource):
 
         return amenity.to_dict(), 200
 
-    @api.expect(amenity_model)
+    @api.expect(amenity_model, validate=True)
     @api.response(200, 'Amenity updated successfully')
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
-        """Update an amenity's information"""
         amenity_data = api.payload
-        if not amenity_data or not amenity_data.get("name"):
-            return {"error": "Invalid input data"}, 400
-        
-        updated_amenity = facade.update_amenity(amenity_id, amenity_data)
-        if not updated_amenity:
-            return {"error": "Amenity not found"}, 404
-        return {
-            "id": updated_amenity.id,
-            "name": updated_amenity.name
-            }, 200
+
+        try:
+            updated_amenity = facade.update_amenity(amenity_id, amenity_data)
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+        return updated_amenity.to_dict(), 200

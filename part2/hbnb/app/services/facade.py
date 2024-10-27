@@ -72,13 +72,19 @@ class HBnBFacade:
         return [amenity.__dict__ for amenity in amenities]
 
     def update_amenity(self, amenity_id, amenity_data):
-        amenity = self.get_amenity(amenity_id)
+        amenity_to_update = self.get_amenity(amenity_id)
 
-        if not amenity:
-            return {"error": "Amenity not found"}, 404
+        if not amenity_to_update:
+            raise ValueError("error: Amenity not found")
+
+        # Checking name uniqueness
+        new_name = amenity_data.get('name')
+        existing_amenity = self.amenity_repo.get_by_attribute('name', new_name)
+        if existing_amenity:
+            raise ValueError("Amenity name already registered")
 
         self.amenity_repo.update(amenity_id, amenity_data)
-        return amenity
+        return amenity_to_update
 
 
     def create_place(self, place_data):

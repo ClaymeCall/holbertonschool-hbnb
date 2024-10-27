@@ -63,7 +63,7 @@ class UserResource(Resource):
         if not user:
             return {"error": "User not found"}, 404
 
-        return user.to_dict()
+        return user.to_dict(), 200
 
 
     @api.expect(user_model, validate=True)
@@ -75,4 +75,4 @@ class UserResource(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return updated_user.to_dict()            
+        return updated_user.to_dict(), 200
