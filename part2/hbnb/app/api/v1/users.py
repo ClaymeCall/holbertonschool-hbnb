@@ -50,24 +50,14 @@ class UserList(Resource):
     def get(self):
         """Retrieve a list of all users"""
 
-        users_list = facade.get_all_users()
+        user_list = facade.get_all_users()
 
-        user_data_list = []
-        
-        """Check that user is a dictionary with the correct keys"""
-        for user in users_list:
-            if isinstance(user, dict):
-                if 'id' in user:
-                    if 'first_name' in user:
-                        if 'last_name' in user:
-                            if 'email' in user:
-                                user_data_list.append(user)
+        # If there are users, return them as JSON
+        if user_list:
+            return jsonify(user_list)
 
-        if user_data_list:
-            return jsonify(user_data_list)
-        else:
-            return {"error": "No users found"}, 404
-
+        # Base case if no users were found
+        return {"error": "No users found"}, 404
 
 @api.route("/<user_id>")
 class UserResource(Resource):
