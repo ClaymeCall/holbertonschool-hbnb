@@ -8,72 +8,93 @@ class Place(BaseModel):
     def __init__(
         self,
         title,
-        description=None,
-        price=None,
-        latitude=None,
-        longitude=None,
-        owner_id=None,
-        owner=None,
-        amenities=None
+        description,
+        price,
+        latitude,
+        longitude,
+        owner
     ):
         """Initialize the Place class with title, description, location, price and owner"""
         super().__init__()
 
-        if amenities:
-            if not all(isinstance(amenity, Amenity) for amenity in amenities):
-                raise ValueError("All amenities must be valid Amenity instances.")
-        self.amenities = amenities if amenities is not None else []
-
-        #valid Title
-        if not isinstance(title, str) or len(title) > 1000:
-            raise ValueError("Fill with a 100 max length characters string title")
         self.title = title
-
-        #valid description
-        self.description = description or "Fill with a description"
-
-        #Valid price
-        if price is not None:
-            if not isinstance(price, (int, float)) or price < 0:
-                raise ValueError("Price must be a positive number.")
+        self.description = description
         self.price = price
-
-        # Valid Latitude
-        if latitude is not None:
-            if not isinstance(latitude, (int, float)) or not (-90 <= latitude <= 90):
-                raise ValueError("Latitude must be between -90.0 and 90.0.")
         self.latitude = latitude
-
-        # Valid Longitude
-        if longitude is not None:
-            if not isinstance(longitude, (int, float)) or not (-180 <= longitude <= 180):
-                raise ValueError("Longitude must be between -180.0 and 180.0.")
         self.longitude = longitude
+        self.owner = owner
 
-        # Set owner and owner_id
-        if owner is not None:
-            if not isinstance(owner, User):
-                raise ValueError("Owner must be a valid User instance.")
-            self.owner = owner
-            self.owner_id = owner.id
-        else:
-            if not isinstance(owner_id, str):
-                raise ValueError("Owner ID must be a valid string.")
-            self.owner_id = owner_id
-            self.owner = None
+    @property
+    def title(self):
+        return self._title
 
-    def get_owner_info(self):
-        """Return dic of the owner's infos if set"""
-        if self.owner:
-            return {
-                "id": self.owner.id,
-                "first_name": self.owner.first_name,
-                "last_name": self.owner.last_name,
-                "email": self.owner.email,
-                "is_admin": self.owner.is_admin if hasattr(self.owner, "is_admin") else False
-            }
-        return None
-    
+    @title.setter
+    def title(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Title must be a string.")
+        if not (1 <= len(value) <= 100):
+            raise ValueError("Title must be between 1 and 100 characters.")
+        self._title = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Description must be a string.")
+        if len(value) > 1000:
+            raise ValueError("Description must be 1000 characters maximum.")
+        self._description = value
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("Price must be a number.")
+        if value < 0:
+            raise ValueError("Price cannot be negative.")
+        self._price = value
+
+    @property
+    def latitude(self):
+        return self._latitude
+
+    @latitude.setter
+    def latitude(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("Latitude must be a number.")
+        if not (-90 <= value <= 90):
+            raise ValueError("Latitude must be between -90 and 90.")
+        self._latitude = value
+
+    @property
+    def longitude(self):
+        return self._longitude
+
+    @longitude.setter
+    def longitude(self, value):
+        if not isinstance(value, (int, float)):
+            raise TypeError("Longitude must be a number.")
+        if not (-180 <= value <= 180):
+            raise ValueError("Longitude must be between -180 and 180.")
+        self._longitude = value
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @owner.setter
+    def owner(self, value):
+        if not isinstance(value, User):
+            raise TypeError("Owner must be an instance of the User class.")
+        self._owner = value
+
+
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
@@ -86,7 +107,19 @@ class Place(BaseModel):
             raise ValueError("Amenity must be valid")
         self.amenities.append(amenity)
 
-    def get_all_info(self):
+    def get_owner_info(self):
+        """Return dic of the owner's infos if set"""
+        if self.owner:
+            return {
+                "id": self.owner.id,
+                "first_name": self.owner.first_name,
+                "last_name": self.owner.last_name,
+                "email": self.owner.email,
+                "is_admin": self.owner.is_admin
+            }
+        return None
+
+    def to_dict(self):
         """return all info of place with amenities and review dedicated"""
         return {
             "id": self.id,

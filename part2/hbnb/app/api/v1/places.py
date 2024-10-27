@@ -34,8 +34,15 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
-        pass
+        user_data = api.payload
+
+        # Catching errors happening at User instanciation
+        try:
+            new_user = facade.create_user(user_data)
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+        return new_user.to_dict()            
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
