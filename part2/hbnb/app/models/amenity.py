@@ -6,12 +6,24 @@ from app.models.base_model import BaseModel
 class Amenity(BaseModel):
     def __init__(self, name):
         super().__init__()
-        
-        if not isinstance(name, str):
+        self.name = name 
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str):
             raise TypeError("Name must be a string.")
-        if len(name) > 50:
+        if len(value) > 50:
             raise ValueError("Name must be 50 characters maximum.")
-        elif len(name) < 1:
+        elif len(value) < 1:
             raise ValueError("Name must have at least 1 character.")
-        
-        self.name = name
+        self._name = value
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+        }
