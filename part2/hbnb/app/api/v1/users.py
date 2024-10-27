@@ -38,7 +38,11 @@ class UserList(Resource):
         if existing_user:
             return {"error": "Email already registered"}, 400
 
-        new_user = facade.create_user(user_data)
+        try:
+            new_user = facade.create_user(user_data)
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
         return {
             "id": new_user.id,
             "first_name": new_user.first_name,
@@ -54,17 +58,27 @@ class UserList(Resource):
 
         users_list = facade.get_all_users()
 
-        if not users_list:
-            return {"No users found"}, 404        
+        user_data_list = []
+        
+        """Check that user is a dictionary with the correct keys"""
+        for user in users_list:
+            if isinstance(user, dict):
+                if 'id' in user:
+                    if 'first_name' in user:
+                        if 'last_name' in user:
+                            if 'email' in user:
+                                user_data_list.append(user)
 
-        return jsonify([user.__dict__ for user in users_list])
+        if user_data_list:
+            return jsonify(user_data_list)
+        else:
+            return {"error": "No users found"}, 404
 
 
 @api.route("/<user_id>")
 class UserResource(Resource):
     @api.response(200, "User details retrieved successfully")
-    @api.response(404, "User not found")
-    
+    @api.response(404, "User not found")    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
