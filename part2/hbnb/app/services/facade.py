@@ -1,3 +1,4 @@
+from app.models import place
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -88,9 +89,24 @@ class HBnBFacade:
 
 
     def create_place(self, place_data):
-        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        pass
-    
+        # Checking Owner existence
+
+        existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
+        if not existing_owner:
+            raise ValueError("Owner_ID must be valid to allow place creation.")
+
+        # Replacing owner_id by its corresponding User instance
+        place_data.pop('owner_id')
+        place_data['owner'] = existing_owner
+
+        print(f"replaced place data with user : {place_data}")
+
+        # Create the new place and add it to the repo
+        new_place = Place(**place_data)
+        self.place_repo.add(new_place)
+        return new_place
+
+
     def get_place(self, place_id):
         # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
         pass
