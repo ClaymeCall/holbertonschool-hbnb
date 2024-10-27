@@ -37,13 +37,7 @@ class UserList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return {
-            "id": new_user.id,
-            "first_name": new_user.first_name,
-            "last_name": new_user.last_name,
-            "email": new_user.email,
-        }, 201
-            
+        return new_user.to_dict()            
 
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
@@ -68,12 +62,9 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {"error": "User not found"}, 404
-        return {
-            "id": user.id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-        }, 200
+
+        return user.to_dict()
+
 
     @api.expect(user_model, validate=True)
     def put(self, user_id):

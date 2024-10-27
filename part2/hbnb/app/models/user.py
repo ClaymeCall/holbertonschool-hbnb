@@ -36,3 +36,12 @@ class User(BaseModel):
             raise TypeError("is_admin must be True or False.")
         else:
             self.is_admin = is_admin
+
+    def to_dict(self):
+
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+        }
