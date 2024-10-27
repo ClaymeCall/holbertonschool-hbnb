@@ -65,7 +65,6 @@ class HBnBFacade:
 
 
     def get_amenity(self, amenity_id):
-        # Placeholder for logic to retrieve an amenity by ID
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
