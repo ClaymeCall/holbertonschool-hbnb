@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
+from app.models import place
+from app.services.facade import HBnBFacade
+from flask import jsonify
 
 api = Namespace('places', description='Place operations')
 
@@ -24,31 +26,34 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    #'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
+
+facade = HBnBFacade()
 
 @api.route('/')
 class PlaceList(Resource):
-    @api.expect(place_model)
+    @api.expect(place_model, validate=True)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        user_data = api.payload
+        place_data = api.payload
 
-        # Catching errors happening at User instanciation
+        # Catching errors happening at Place instanciation
         try:
-            new_user = facade.create_user(user_data)
+            new_place = facade.create_place(place_data)
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return new_user.to_dict()            
+        return new_place.to_dict()            
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
         # Placeholder for logic to return a list of all places
         pass
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -59,7 +64,7 @@ class PlaceResource(Resource):
         # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
         pass
 
-    @api.expect(place_model)
+    @api.expect(place_model, validate=True)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')

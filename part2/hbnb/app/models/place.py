@@ -94,7 +94,7 @@ class Place(BaseModel):
             raise TypeError("Owner must be an instance of the User class.")
         self._owner = value
 
-
+    '''
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
@@ -106,6 +106,7 @@ class Place(BaseModel):
         if not isinstance(amenity, Amenity):
             raise ValueError("Amenity must be valid")
         self.amenities.append(amenity)
+    '''
 
     def get_owner_info(self):
         """Return dic of the owner's infos if set"""
@@ -118,7 +119,6 @@ class Place(BaseModel):
                 "is_admin": self.owner.is_admin
             }
         return None
-
     def to_dict(self):
         """return all info of place with amenities and review dedicated"""
         return {
@@ -128,7 +128,7 @@ class Place(BaseModel):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "owner": self.get_owner_info(),
-            "amenities": [amenity.name for amenity in self.amenities],
-            "reviews": [review.text for review in self.reviews],
+            "owner_id": self.owner.id,
+            #"amenities": [amenity.name for amenity in self.amenities],
+            #"reviews": [review.text for review in self.reviews],
         }

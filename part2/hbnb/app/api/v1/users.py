@@ -1,5 +1,4 @@
 from flask_restx import Namespace, Resource, fields
-from app.models import user
 from app.services.facade import HBnBFacade
 from flask import jsonify
 
