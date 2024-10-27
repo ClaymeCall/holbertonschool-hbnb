@@ -37,6 +37,20 @@ class HBnBFacade:
             raise ValueError("Email cannot be empty.")
         return self.user_repo.get_by_attribute('email', email)
     
+    def update_user(self, user_id, user_data):
+        user_to_update = self.get_user(user_id)
+
+        if not user_to_update:
+            raise ValueError("User not found")
+
+        # Checking email uniqueness
+        existing_user = self.get_user_by_email(user_data.get("email"))
+        if existing_user:
+            raise ValueError("Email already registered")
+
+        self.user_repo.update(user_id, user_data)
+        return user_to_update
+
     def create_amenity(self, amenity_data):
     # Placeholder for logic to create an amenity
         amenity = Amenity(**amenity_data)
@@ -52,7 +66,6 @@ class HBnBFacade:
         return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
-        # Placeholder for logic to update an amenity
         amenity = self.get_amenity(amenity_id)
 
         if not amenity:

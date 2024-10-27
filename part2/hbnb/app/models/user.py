@@ -1,44 +1,61 @@
 from app.models.base_model import BaseModel
 import re
 
-# This regex is used to verify valid emails.
-regex = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$'
-
-
 class User(BaseModel):
+    EMAIL_REGEX = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$'    
+
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.is_admin = is_admin
 
-        '''Setting email value'''
-        if re.fullmatch(regex, email):
-            self.email = email
-        else:
+    @property
+    def first_name(self):
+        return self._first_name
+
+    @first_name.setter
+    def first_name(self, value):
+        if not value.isalpha():
+            raise TypeError("First name must be a string of letters.")
+        elif len(value) > 50:
+            raise ValueError("First name must be 50 characters maximum.")
+        self._first_name = value
+
+    @property
+    def last_name(self):
+        return self._last_name
+
+    @last_name.setter
+    def last_name(self, value):
+        if not value.isalpha():
+            raise TypeError("Last name must be a string of letters.")
+        elif len(value) > 50:
+            raise ValueError("Last name must be 50 characters maximum.")
+        self._last_name = value
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        if not re.fullmatch(self.EMAIL_REGEX, value):
             raise ValueError("Invalid email format.")
+        self._email = value
 
-        '''Setting first name value'''
-        if not first_name.isalpha():
-            raise TypeError("First name must be a string of letters.")
-        elif len(first_name) > 50:
-            raise ValueError("First name must be 50 chars maximum")
-        else:
-            self.first_name = first_name
+    @property
+    def is_admin(self):
+        return self._is_admin
 
-        '''Setting last name value'''
-        if not last_name.isalpha():
-            raise TypeError("First name must be a string of letters.")
-        elif len(last_name) > 50:
-            raise ValueError("Last name must be 50 chars maximum")
-        else:
-            self.last_name = last_name
-
-        '''Setting admin boolean value'''
-        if type(is_admin) is not bool:
-            raise TypeError("is_admin must be True or False.")
-        else:
-            self.is_admin = is_admin
+    @is_admin.setter
+    def is_admin(self, value):
+        if not isinstance(value, bool):
+            raise TypeError("is_admin must be a boolean (True or False).")
+        self._is_admin = value
 
     def to_dict(self):
-
         return {
             "id": self.id,
             "first_name": self.first_name,
