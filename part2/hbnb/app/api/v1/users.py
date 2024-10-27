@@ -31,13 +31,7 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        if not user_data:
-            return {"error": "invalid input data. json required"}, 400
-
-        existing_user = facade.get_user_by_email(user_data.get("email"))
-        if existing_user:
-            return {"error": "Email already registered"}, 400
-
+        # Catching errors happening at User instanciation
         try:
             new_user = facade.create_user(user_data)
         except ValueError as e:
@@ -49,7 +43,7 @@ class UserList(Resource):
             "last_name": new_user.last_name,
             "email": new_user.email,
         }, 201
-    
+            
 
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")

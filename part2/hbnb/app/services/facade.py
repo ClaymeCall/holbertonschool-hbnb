@@ -15,9 +15,15 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
 
     def create_user(self, user_data):
-        user = User(**user_data)
-        self.user_repo.add(user)
-        return user
+        # Checking email uniqueness
+        existing_user = self.get_user_by_email(user_data.get("email"))
+        if existing_user:
+            raise ValueError("Email already registered")
+
+        # Create the new user and add it to the repo
+        new_user = User(**user_data)
+        self.user_repo.add(new_user)
+        return new_user
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
