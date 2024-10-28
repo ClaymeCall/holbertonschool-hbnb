@@ -1,4 +1,3 @@
-from app.models import place
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -144,3 +143,5 @@ class HBnBFacade:
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review
         pass
+
+facade = HBnBFacade()
