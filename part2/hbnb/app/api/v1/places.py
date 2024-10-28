@@ -80,5 +80,11 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
-        # Placeholder for the logic to update a place by ID
-        pass
+        place_data = api.payload
+
+        try:
+            updated_place = facade.update_place(place_id, place_data)
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+        return updated_place.to_dict(), 200

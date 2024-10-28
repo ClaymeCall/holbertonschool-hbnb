@@ -98,8 +98,6 @@ class HBnBFacade:
         place_data.pop('owner_id')
         place_data['owner'] = existing_owner
 
-        print(f"replaced place data with user : {place_data}")
-
         # Create the new place and add it to the repo
         new_place = Place(**place_data)
         self.place_repo.add(new_place)
@@ -130,8 +128,13 @@ class HBnBFacade:
         return place_dicts
 
     def update_place(self, place_id, place_data):
-        # Placeholder for logic to update a place
-        pass
+        place_to_update = self.get_place(place_id)
+
+        if not place_to_update:
+            raise ValueError("Place not found")
+
+        self.place_repo.update(place_id, place_data)
+        return place_to_update
     
     def create_review(self, review_data):
     # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
