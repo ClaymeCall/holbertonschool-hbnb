@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import facade
+from app.models.user import User
+from app.models.amenity import Amenity
 from flask import jsonify
 
 api = Namespace('places', description='Place operations')
@@ -47,10 +49,17 @@ class PlaceList(Resource):
         return new_place.to_dict()            
 
     @api.response(200, 'List of places retrieved successfully')
+
     def get(self):
         """Retrieve a list of all places"""
-        # Placeholder for logic to return a list of all places
-        pass
+
+        place_list = facade.get_all_places()
+
+        if place_list:
+            return jsonify(place_list)
+
+            # Base case if no places were found
+        return {"error": "No place found"}, 404
 
 
 @api.route('/<place_id>')
@@ -59,8 +68,11 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        return place.to_dict(), 200
 
     @api.expect(place_model, validate=True)
     @api.response(200, 'Place updated successfully')

@@ -128,7 +128,7 @@ class Place(BaseModel):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "owner_id": self.owner.id,
+            "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
             #"amenities": [amenity.name for amenity in self.amenities],
             #"reviews": [review.text for review in self.reviews],
         }

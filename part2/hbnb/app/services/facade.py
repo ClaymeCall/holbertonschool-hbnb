@@ -107,13 +107,27 @@ class HBnBFacade:
 
 
     def get_place(self, place_id):
-        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        return self.place_repo.get(place_id)
 
     def get_all_places(self):
-        # Placeholder for logic to retrieve all places
         """Retrieves all places"""
-        pass
+        places = self.place_repo.get_all()
+        
+        # Convert each Place instance to a dictionary
+        place_dicts = []
+        for place in places:
+            if hasattr(place, "to_dict"):
+                place_dicts.append(place.to_dict())
+            else:
+                # Manually convert nested User and Amenity objects to dictionaries
+                place_dict = place.__dict__.copy()  # Make a copy of place's attributes
+                if isinstance(place_dict.get("user"), User):
+                    place_dict["user"] = place_dict["user"].to_dict()
+                if isinstance(place_dict.get("amenity"), Amenity):
+                    place_dict["amenity"] = place_dict["amenity"].to_dict()
+                place_dicts.append(place_dict)
+        
+        return place_dicts
 
     def update_place(self, place_id, place_data):
         # Placeholder for logic to update a place
