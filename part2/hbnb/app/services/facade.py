@@ -45,7 +45,7 @@ class HBnBFacade:
 
         # Checking email uniqueness
         existing_user = self.get_user_by_email(user_data.get("email"))
-        if existing_user:
+        if existing_user and existing_user.id != user_id:
             raise ValueError("Email already registered")
 
         self.user_repo.update(user_id, user_data)
