@@ -88,21 +88,53 @@ class HBnBFacade:
 
 
     def create_place(self, place_data):
-        # Placeholder for logic to create a place, including validation for price, latitude, and longitude
-        pass
-    
+        # Checking Owner existence
+
+        existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
+        if not existing_owner:
+            raise ValueError("Owner_ID must be valid to allow place creation.")
+
+        # Replacing owner_id by its corresponding User instance
+        place_data.pop('owner_id')
+        place_data['owner'] = existing_owner
+
+        # Create the new place and add it to the repo
+        new_place = Place(**place_data)
+        self.place_repo.add(new_place)
+        return new_place
+
+
     def get_place(self, place_id):
-        # Placeholder for logic to retrieve a place by ID, including associated owner and amenities
-        pass
+        return self.place_repo.get(place_id)
 
     def get_all_places(self):
-        # Placeholder for logic to retrieve all places
         """Retrieves all places"""
-        pass
+        places = self.place_repo.get_all()
+        
+        # Convert each Place instance to a dictionary
+        place_dicts = []
+        for place in places:
+            if hasattr(place, "to_dict"):
+                place_dicts.append(place.to_dict())
+            else:
+                # Manually convert nested User and Amenity objects to dictionaries
+                place_dict = place.__dict__.copy()  # Make a copy of place's attributes
+                if isinstance(place_dict.get("user"), User):
+                    place_dict["user"] = place_dict["user"].to_dict()
+                if isinstance(place_dict.get("amenity"), Amenity):
+                    place_dict["amenity"] = place_dict["amenity"].to_dict()
+                place_dicts.append(place_dict)
+        
+        return place_dicts
 
     def update_place(self, place_id, place_data):
-        # Placeholder for logic to update a place
-        pass
+        place_to_update = self.get_place(place_id)
+
+        if not place_to_update:
+            raise ValueError("Place not found")
+
+        self.place_repo.update(place_id, place_data)
+        return place_to_update
     
     def create_review(self, review_data):
     # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
@@ -128,3 +160,5 @@ class HBnBFacade:
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review
         pass
+
+facade = HBnBFacade()

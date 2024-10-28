@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.models import user
-from app.services.facade import HBnBFacade
+from app.services.facade import facade
 from flask import jsonify
 
 api = Namespace("users", description="User operations")
@@ -19,7 +18,6 @@ user_model = api.model(
     },
 )
 
-facade = HBnBFacade()
 
 
 @api.route("/")
