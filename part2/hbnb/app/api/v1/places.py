@@ -74,7 +74,7 @@ class PlaceResource(Resource):
 
         return place.to_dict(), 200
 
-    @api.expect(place_model, validate=True)
+    @api.expect(place_model, validate=False)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
