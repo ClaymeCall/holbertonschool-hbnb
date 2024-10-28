@@ -49,7 +49,7 @@ class PlaceList(Resource):
         return new_place.to_dict()            
 
     @api.response(200, 'List of places retrieved successfully')
-
+    @api.response(404, 'No place found')
     def get(self):
         """Retrieve a list of all places"""
 
