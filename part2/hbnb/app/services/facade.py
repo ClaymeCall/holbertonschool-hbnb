@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
 from flask_restx import Namespace
 
 
@@ -89,7 +90,6 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         # Checking Owner existence
-
         existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
         if not existing_owner:
             raise ValueError("Owner_ID must be valid to allow place creation.")
@@ -135,19 +135,33 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, place_data)
         return place_to_update
+
     
     def create_review(self, review_data):
-    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
-        pass
+        owner = self.user_repo.get_by_attribute('id', review_data.get('owner_id'))
+        existing_user = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
+        existing_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
 
+        if owner and owner == existing_user:
+            raise ValueError("The owner of the place cannot give a review.")
+
+        if not existing_user:
+            raise ValueError("User_ID must be valid to allow review creation.")
+
+        if not existing_place:
+            raise ValueError("Place_ID must be valid to allow review creation.")
+
+        new_review = Review(**review_data)
+        self.review_repo.add(new_review)
+        return new_review
 
     def get_review(self, review_id):
         # Placeholder for logic to retrieve a review by ID
-        pass
+        return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
         # Placeholder for logic to retrieve all reviews
-        pass
+        return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
         # Placeholder for logic to retrieve all reviews for a specific place
@@ -155,7 +169,13 @@ class HBnBFacade:
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review
-        pass
+        review_to_update = self.get_review(review_id)
+
+        if not review_to_update:
+            raise ValueError("Review not found")
+        
+        self.place_repo.update(review_id, review_data)
+        return review_to_update
 
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review

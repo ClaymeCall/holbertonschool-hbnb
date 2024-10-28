@@ -1,29 +1,17 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import HBnBFacade
-from part2.hbnb.app.models import base_model
+from app.services.facade import facade
+from flask import jsonify
 
 api = Namespace('reviews', description='Review operations')
 
 # Define the review model for input validation and documentation
 review_model = api.model('Review', {
-    'text': fields.String(required=True, description='Text of the review'),
+    'place_id': fields.String(required=True, description='ID of the place'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
+    'text': fields.String(required=True, description='Text of the review'),
     'user_id': fields.String(required=True, description='ID of the user'),
-    'place_id': fields.String(required=True, description='ID of the place')
+    'owner_id': fields.String(required=True, description='ID of the owner')
 })
-
-place_model = api.model('Place', {
-    'title': fields.String(required=True, description='Title of the place'),
-    'description': fields.String(description='Description of the place'),
-    'price': fields.Float(required=True, description='Price per night'),
-    'latitude': fields.Float(required=True, description='Latitude of the place'),
-    'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'owner': fields.Nested(base_model, description='Owner of the place'),
-    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
-})
-
-facade = HBnBFacade()
 
 @api.route('/')
 class ReviewList(Resource):
