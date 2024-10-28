@@ -15,13 +15,20 @@ review_model = api.model('Review', {
 
 @api.route('/')
 class ReviewList(Resource):
-    @api.expect(review_model)
+    @api.expect(review_model, validate=True)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
         # Placeholder for the logic to register a new review
-        pass
+        review_data = api.payload
+
+        try:
+            new_review = facade.create_review(review_data)
+        except ValueError as e:
+            return ("error": str(e)), 400
+    
+        return new_review.to_dict()
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
