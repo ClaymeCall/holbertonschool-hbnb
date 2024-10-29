@@ -12,7 +12,7 @@ class Review(BaseModel):
         """Initialize Review class with BaseModel"""
         super().__init__()
         self.text = text
-        self.place = place  # Place being reviewed
+        self.place = place
         self.user = user  # User who wrote review
         self.rating = rating  # Setter use
         self.owner = owner
@@ -83,7 +83,7 @@ class Review(BaseModel):
             raise TypeError("Owner must be an instance of the User class.")
         self._owner = value
     
-
+    '''
     def validate_user(self, user_id):
         """Validating user method to authorize adding review"""
         for user in users_list:
@@ -103,7 +103,7 @@ class Review(BaseModel):
         return "Review by {} for {}: {} > Rating: {}".format(
             self.user.name, self.place.name, self.text, self.rating
         )
-
+    '''
     def to_dict(self):
         return {
             "id": self.id,

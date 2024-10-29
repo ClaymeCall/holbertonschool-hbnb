@@ -5,6 +5,7 @@ from flask import jsonify
 api = Namespace('reviews', description='Review operations')
 
 # Define the review model for input validation and documentation
+
 review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
@@ -26,7 +27,7 @@ class ReviewList(Resource):
         try:
             new_review = facade.create_review(review_data)
         except ValueError as e:
-            return ("error": str(e)), 400
+            return {"error": str(e)}, 400
     
         return new_review.to_dict()
 
