@@ -127,6 +127,12 @@ class HBnBFacade:
         
         return place_dicts
 
+    def get_place_by_id(self, place_id):
+        place = self.place_repo.get_by_attribute('id', place_id)
+        if place is None:
+            raise ValueError(f"Place with id {place_id} does not exist")
+        return place
+
     def update_place(self, place_id, place_data):
         place_to_update = self.get_place(place_id)
 
@@ -142,16 +148,16 @@ class HBnBFacade:
         existing_user = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
         existing_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
 
+        if not existing_place:
+            raise ValueError("Place_ID must be valid to allow review creation.")
+        
         if owner and owner == existing_user:
-            raise ValueError("The owner of the place cannot give a review.")
+            raise ValueError("Owner_id must be different from user.")
 
         if not existing_user:
             raise ValueError("User_ID must be valid to allow review creation.")
 
-        if not existing_place:
-            raise ValueError("Place_ID must be valid to allow review creation.")
-
-        new_review = Review(**review_data)
+        new_review = Review(existing_place, existing_user, review_data['rating'], review_data['text'], owner)
         self.review_repo.add(new_review)
         return new_review
 
