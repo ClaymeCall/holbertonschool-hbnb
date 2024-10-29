@@ -144,20 +144,27 @@ class HBnBFacade:
 
     
     def create_review(self, review_data):
-        owner = self.user_repo.get_by_attribute('id', review_data.get('owner_id'))
-        existing_user = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
-        existing_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
-
-        if not existing_place:
+        reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
+        if not reviewed_place:
             raise ValueError("Place_ID must be valid to allow review creation.")
         
-        if owner and owner == existing_user:
-            raise ValueError("Owner_id must be different from user.")
-
-        if not existing_user:
+        review_author = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
+        if not review_author:
             raise ValueError("User_ID must be valid to allow review creation.")
 
-        new_review = Review(existing_place, existing_user, review_data['rating'], review_data['text'], owner)
+        owner = reviewed_place.owner
+        if review_author is owner:
+            raise ValueError("You can't review your own place.")
+        
+        # Replacing owner_id by its corresponding User instance
+        review_data.pop('user_id')
+        review_data['user'] = review_author
+       
+        # Replacing place_id by its corresponding Place instance
+        review_data.pop('place_id')
+        review_data['place'] = reviewed_place
+
+        new_review = Review(**review_data)
         self.review_repo.add(new_review)
         return new_review
 

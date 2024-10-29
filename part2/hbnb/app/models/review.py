@@ -8,14 +8,13 @@ places_list = []
 
 
 class Review(BaseModel):
-    def __init__(self, place, user, rating, text, owner):
+    def __init__(self, place, user, rating, text):
         """Initialize Review class with BaseModel"""
         super().__init__()
         self.text = text
         self.place = place
         self.user = user  # User who wrote review
         self.rating = rating  # Setter use
-        self.owner = owner
 
     @property
     def rating(self):
@@ -71,45 +70,11 @@ class Review(BaseModel):
             raise TypeError("User must be an instance of the User class.")
         self._user = value
 
-    @property
-    def owner(self):
-        """Return the owner of the review"""
-        return self._owner
-
-    @owner.setter
-    def owner(self, value):
-        """Set the owner of the review, ensuring it's a User instance"""
-        if not isinstance(value, User):
-            raise TypeError("Owner must be an instance of the User class.")
-        self._owner = value
-    
-    '''
-    def validate_user(self, user_id):
-        """Validating user method to authorize adding review"""
-        for user in users_list:
-            if user.user_id == user_id:
-                return user
-        raise ValueError("User {} does not exist".format(user_id))
-
-    def validate_place(self, place_id):
-        """Validating place method to authorize adding review"""
-        for place in places_list:
-            if place.place_id == place_id:
-                return place
-        raise ValueError("User {} does not exist".format(place_id))
-
-    def print_review(self):
-        """Print the review as a readble string"""
-        return "Review by {} for {}: {} > Rating: {}".format(
-            self.user.name, self.place.name, self.text, self.rating
-        )
-    '''
     def to_dict(self):
         return {
             "id": self.id,
-            "place": self.place.id if isinstance(self.place, Place) else None,
+            "place": self.place.to_dict() if isinstance(self.place, Place) else None,
             "rating": self.rating,
             "text": self.text,
-            "user_id": self.user.id if isinstance(self.user, User) else None,
-            "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
+            "user": self.user.to_dict() if isinstance(self.user, User) else None,
         }
