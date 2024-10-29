@@ -1,6 +1,7 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.review import Review
 
 
 class Place(BaseModel):
@@ -13,7 +14,7 @@ class Place(BaseModel):
         longitude,
         owner
     ):
-        """Initialize the Place class with title, description, location, price and owner"""
+        """Initialize the Place class with its specific attributes."""
         super().__init__()
 
         self.title = title
@@ -22,6 +23,8 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+        self.__amenities = []
+        self.__reviews = []
 
     @property
     def title(self):
@@ -93,32 +96,18 @@ class Place(BaseModel):
             raise TypeError("Owner must be an instance of the User class.")
         self._owner = value
 
-    '''
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
-            raise ValueError("Review must a valid")
-        self.reviews.append(review)
+            raise ValueError("review must be an instance of the Review class.")
+        self.__reviews.append(review)
 
     def add_amenity(self, amenity):
         """Add amenity to place."""
         if not isinstance(amenity, Amenity):
-            raise ValueError("Amenity must be valid")
-        self.amenities.append(amenity)
-    '''
+            raise ValueError("amenity must be an instance of the Amenity class.")
+        self.__amenities.append(amenity)
 
-    def get_owner_info(self):
-        """Return dic of the owner's infos if set"""
-        if self.owner:
-            return {
-                "id": self.owner.id,
-                "first_name": self.owner.first_name,
-                "last_name": self.owner.last_name,
-                "email": self.owner.email,
-                "is_admin": self.owner.is_admin
-            }
-        return None
-    
     def to_dict(self):
         """return all info of place with amenities and review dedicated"""
         return {
@@ -129,6 +118,6 @@ class Place(BaseModel):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
-            #"amenities": [amenity.name for amenity in self.amenities],
-            #"reviews": [review.text for review in self.reviews],
+            "amenities": [amenity.name for amenity in self.__amenities],
+            "reviews": [review.text for review in self.__reviews],
         }

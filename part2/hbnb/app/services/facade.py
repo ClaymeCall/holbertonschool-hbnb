@@ -160,10 +160,6 @@ class HBnBFacade:
         review_data.pop('user_id')
         review_data['user'] = review_author
        
-        # Replacing place_id by its corresponding Place instance
-        review_data.pop('place_id')
-        review_data['place'] = reviewed_place
-
         new_review = Review(**review_data)
         self.review_repo.add(new_review)
         return new_review

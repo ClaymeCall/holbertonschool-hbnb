@@ -1,6 +1,5 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
-from app.models.place import Place
 
 
 users_list = []
@@ -8,11 +7,11 @@ places_list = []
 
 
 class Review(BaseModel):
-    def __init__(self, place, user, rating, text):
+    def __init__(self, place_id, user, rating, text):
         """Initialize Review class with BaseModel"""
         super().__init__()
         self.text = text
-        self.place = place
+        self.place_id = place_id
         self.user = user  # User who wrote review
         self.rating = rating  # Setter use
 
@@ -47,16 +46,14 @@ class Review(BaseModel):
         self._text = value
 
     @property
-    def place(self):
-        """Return the place being reviewed"""
-        return self._place
+    def place_id(self):
+        """Return the id of the place being reviewed"""
+        return self._place_id
 
-    @place.setter
-    def place(self, value):
-        """Set the place being reviewed, ensuring it's a Place instance"""
-        if not isinstance(value, Place):
-            raise TypeError("Place must be an instance of the Place class.")
-        self._place = value
+    @place_id.setter
+    def place_id(self, value):
+        """Set the id of the place being reviewed"""
+        self._place_id = value
 
     @property
     def user(self):
@@ -73,7 +70,7 @@ class Review(BaseModel):
     def to_dict(self):
         return {
             "id": self.id,
-            "place": self.place.to_dict() if isinstance(self.place, Place) else None,
+            "place": self.place_id.to_dict() if isinstance(self.place_id, Place) else None,
             "rating": self.rating,
             "text": self.text,
             "user": self.user.to_dict() if isinstance(self.user, User) else None,
