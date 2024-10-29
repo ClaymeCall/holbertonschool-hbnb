@@ -1,7 +1,6 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.amenity import Amenity
-from app.models.review import Review
 
 
 class Place(BaseModel):
@@ -119,6 +118,7 @@ class Place(BaseModel):
                 "is_admin": self.owner.is_admin
             }
         return None
+    
     def to_dict(self):
         """return all info of place with amenities and review dedicated"""
         return {

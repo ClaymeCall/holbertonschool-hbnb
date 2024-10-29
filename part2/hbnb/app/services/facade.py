@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
 from flask_restx import Namespace
 
 
@@ -89,7 +90,6 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         # Checking Owner existence
-
         existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
         if not existing_owner:
             raise ValueError("Owner_ID must be valid to allow place creation.")
@@ -127,6 +127,12 @@ class HBnBFacade:
         
         return place_dicts
 
+    def get_place_by_id(self, place_id):
+        place = self.place_repo.get_by_attribute('id', place_id)
+        if place is None:
+            raise ValueError(f"Place with id {place_id} does not exist")
+        return place
+
     def update_place(self, place_id, place_data):
         place_to_update = self.get_place(place_id)
 
@@ -135,19 +141,40 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, place_data)
         return place_to_update
+
     
     def create_review(self, review_data):
-    # Placeholder for logic to create a review, including validation for user_id, place_id, and rating
-        pass
+        reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
+        if not reviewed_place:
+            raise ValueError("Place_ID must be valid to allow review creation.")
+        
+        review_author = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
+        if not review_author:
+            raise ValueError("User_ID must be valid to allow review creation.")
 
+        owner = reviewed_place.owner
+        if review_author is owner:
+            raise ValueError("You can't review your own place.")
+        
+        # Replacing owner_id by its corresponding User instance
+        review_data.pop('user_id')
+        review_data['user'] = review_author
+       
+        # Replacing place_id by its corresponding Place instance
+        review_data.pop('place_id')
+        review_data['place'] = reviewed_place
+
+        new_review = Review(**review_data)
+        self.review_repo.add(new_review)
+        return new_review
 
     def get_review(self, review_id):
         # Placeholder for logic to retrieve a review by ID
-        pass
+        return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
         # Placeholder for logic to retrieve all reviews
-        pass
+        return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
         # Placeholder for logic to retrieve all reviews for a specific place
@@ -155,7 +182,13 @@ class HBnBFacade:
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review
-        pass
+        review_to_update = self.get_review(review_id)
+
+        if not review_to_update:
+            raise ValueError("Review not found")
+        
+        self.place_repo.update(review_id, review_data)
+        return review_to_update
 
     def delete_review(self, review_id):
         # Placeholder for logic to delete a review
