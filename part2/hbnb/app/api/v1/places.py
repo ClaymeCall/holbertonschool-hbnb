@@ -46,7 +46,7 @@ class PlaceList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return new_place.to_dict()            
+        return new_place.to_dict(), 201
 
     @api.response(200, 'List of places retrieved successfully')
     @api.response(404, 'No place found')
@@ -56,7 +56,7 @@ class PlaceList(Resource):
         place_list = facade.get_all_places()
 
         if place_list:
-            return jsonify(place_list)
+            return jsonify(place_list), 200
 
             # Base case if no places were found
         return {"error": "No place found"}, 404

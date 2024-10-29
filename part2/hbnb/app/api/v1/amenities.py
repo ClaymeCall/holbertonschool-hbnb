@@ -28,7 +28,7 @@ class AmenityList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return new_amenity.to_dict()            
+        return new_amenity.to_dict(), 201
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(404, "No amenities found")
@@ -39,7 +39,7 @@ class AmenityList(Resource):
 
         # If there are amenities, return them as JSON
         if amenity_list:
-            return jsonify(amenity_list)
+            return jsonify(amenity_list), 200
 
         # Base case if no amenities were found
         return {"message": "No amenities found"}, 404

@@ -20,7 +20,6 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        # Placeholder for the logic to register a new review
         review_data = api.payload
 
         try:
@@ -28,7 +27,7 @@ class ReviewList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
     
-        return new_review.to_dict()
+        return new_review.to_dict(), 201
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
