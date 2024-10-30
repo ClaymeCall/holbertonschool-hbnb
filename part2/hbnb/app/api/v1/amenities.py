@@ -39,7 +39,7 @@ class AmenityList(Resource):
 
         # If there are amenities, return them as JSON
         if amenity_list:
-            return jsonify(amenity_list), 200
+            return jsonify(amenity_list)
 
         # Base case if no amenities were found
         return {"message": "No amenities found"}, 404

@@ -142,6 +142,20 @@ class HBnBFacade:
         self.place_repo.update(place_id, place_data)
         return place_to_update
 
+    def add_amenity_to_place(self, place_id, amenity_name):
+        # Check place existence
+        place_to_amend = self.place_repo.get(place_id)
+        if not place_to_amend:
+           raise ValueError("Place not found")
+
+        # Check amenity existence
+        existing_amenity = self.amenity_repo.get_by_attribute('name', amenity_name)
+        if not existing_amenity:
+           raise ValueError("Amenity not found")
+        
+        place_to_amend.add_amenity(existing_amenity)
+
+
     
     def create_review(self, review_data):
         reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))

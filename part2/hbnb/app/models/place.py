@@ -106,6 +106,9 @@ class Place(BaseModel):
         """Add amenity to place."""
         if not isinstance(amenity, Amenity):
             raise ValueError("amenity must be an instance of the Amenity class.")
+
+        if amenity in self.__amenities:
+            raise ValueError("amenity already registered for that place")
         self.__amenities.append(amenity)
 
     def to_dict(self):

@@ -1,14 +1,14 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import facade
-from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.place import Place
 from flask import jsonify
 
 api = Namespace('places', description='Place operations')
 
 # Define the models for related entities
 amenity_model = api.model('PlaceAmenity', {
-    'id': fields.String(description='Amenity ID'),
+    #'id': fields.String(description='Amenity ID'),
     'name': fields.String(description='Name of the amenity')
 })
 
@@ -56,7 +56,7 @@ class PlaceList(Resource):
         place_list = facade.get_all_places()
 
         if place_list:
-            return jsonify(place_list), 200
+            return jsonify(place_list)
 
             # Base case if no places were found
         return {"error": "No place found"}, 404
@@ -85,6 +85,20 @@ class PlaceResource(Resource):
         try:
             updated_place = facade.update_place(place_id, place_data)
         except ValueError as e:
-            return {"error": str(e)}, 400
+            return {"error": str(e)}, 404
 
         return updated_place.to_dict(), 200
+
+    @api.expect(amenity_model, validate=True)
+    @api.response(200, 'Amenity successfuly added to place')
+    @api.response(404, 'Not found')
+    def post(self, place_id):
+        """Add amenity to a place"""
+        amenity_payload = api.payload
+
+        try:
+            facade.add_amenity_to_place(place_id, amenity_payload.get('name'))
+        except ValueError as e:
+            return {"error": str(e)}, 404
+
+        return facade.place_repo.get(place_id).to_dict(), 200
