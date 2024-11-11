@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import facade
-from flask import jsonify
 
 api = Namespace('reviews', description='Review operations')
 
