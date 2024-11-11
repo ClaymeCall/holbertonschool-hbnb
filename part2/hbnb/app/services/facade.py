@@ -144,6 +144,7 @@ class HBnBFacade:
 
     
     def create_review(self, review_data):
+        """Create a new review with valid ID and if you are not its owner"""
         reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
         if not reviewed_place:
             raise ValueError("Place_ID must be valid to allow review creation.")
@@ -169,29 +170,42 @@ class HBnBFacade:
         return new_review
 
     def get_review(self, review_id):
-        # Placeholder for logic to retrieve a review by ID
+        """Get review by id"""
         return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
-        # Placeholder for logic to retrieve all reviews
+        """Get ll the reviews"""
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        # Placeholder for logic to retrieve all reviews for a specific place
-        pass
+        """Get all the reviews for a specific place"""
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError(f"Place with id {place_id} not found")
+        
+        reviews = [review for review in self.review_repo.get_all()
+                   if review.place.id == place_id]
+
+        return reviews
 
     def update_review(self, review_id, review_data):
-        # Placeholder for logic to update a review
+        """ Update a review if it exists"""
         review_to_update = self.get_review(review_id)
 
         if not review_to_update:
             raise ValueError("Review not found")
         
-        self.place_repo.update(review_id, review_data)
+        self.review_repo.update(review_id, review_data)
         return review_to_update
 
     def delete_review(self, review_id):
-        # Placeholder for logic to delete a review
-        pass
+        """Delete a review if it exists"""
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+        self.review_repo.delete(review_id)
+
+        return True
+
 
 facade = HBnBFacade()

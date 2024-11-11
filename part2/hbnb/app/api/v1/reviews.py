@@ -20,7 +20,6 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        # Placeholder for the logic to register a new review
         review_data = api.payload
 
         try:
@@ -33,8 +32,14 @@ class ReviewList(Resource):
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        # Placeholder for logic to return a list of all reviews
-        pass
+
+        review_list = facade.get_all_reviews()
+
+        if review_list:
+            return jsonify(review_list)
+
+        return {"error": "No review found"}, 404
+
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -42,8 +47,14 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        # Placeholder for the logic to retrieve a review by ID
-        pass
+        try:
+            review = review.get_review(review_id)
+            if not review:
+                return {"error": "Review not found"}, 404
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+        return review.to_dict(), 200
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -51,15 +62,32 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
-        # Placeholder for the logic to update a review by ID
-        pass
+        
+        review_data = api.payload
+
+        try:
+            existing_review = facade.get_review(review_id)
+            if not existing_review:
+                return {"error": "Review not found"}, 404
+            
+            update_review = facade.update_review(review_id, review_data)
+            return jsonify({"message": "Review succesfully updated:",
+                            "review": update_review.to_dict()}), 200
+
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        # Placeholder for the logic to delete a review
-        pass
+        try:
+            result = facade.delete_review(review_id)
+            if result:
+                return {"message": "Successful deleting review"}, 200
+        except ValueError as e:
+            return {"error": str(e)}, 404
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -67,5 +95,10 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        # Placeholder for logic to return a list of reviews for a place
-        pass
+
+        try:
+            reviews = facade.get_reviews_by_place(place_id)
+            return jsonify([review.to_dict() for review in reviews]), 200
+
+        except ValueError as e:
+            return {"error": str(e)}, 404

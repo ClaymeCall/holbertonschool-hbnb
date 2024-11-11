@@ -59,6 +59,20 @@ class Review(BaseModel):
         self._place = value
 
     @property
+    def place_id(self):
+        """Return the ID of the reviewed place"""
+        return self._place.id if self._place else None
+    
+    @place_id.setter
+    def place_id(self, value):
+        """set the place with ID"""
+        place = self.place_repo.get(value)
+
+        if not place:
+            raise ValueError(f"No place found with ID {value}")
+        self._place = place
+
+    @property
     def user(self):
         """Return the user who wrote the review"""
         return self._user
