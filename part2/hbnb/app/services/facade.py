@@ -175,7 +175,7 @@ class HBnBFacade:
 
     def get_all_reviews(self):
         """Get ll the reviews"""
-        return self.review_repo.get_all()
+        return (self.review_repo.get_all())
 
     def get_reviews_by_place(self, place_id):
         """Get all the reviews for a specific place"""
