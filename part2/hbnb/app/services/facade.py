@@ -187,8 +187,10 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        # Placeholder for logic to retrieve all reviews for a specific place
-        pass
+        if not place_id or self.get_place_by_id(place_id) is None:
+            raise ValueError("No place found matching the provided ID")
+
+        return self.review_repo.get_by_attribute('place_id', place_id)
 
     def update_review(self, review_id, review_data):
         # Placeholder for logic to update a review

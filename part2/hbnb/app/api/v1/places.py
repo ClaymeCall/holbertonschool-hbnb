@@ -89,6 +89,8 @@ class PlaceResource(Resource):
 
         return updated_place.to_dict(), 200
 
+@api.route('/<place_id>/amenities')
+class PlaceAmenity(Resource):
     @api.expect(amenity_model, validate=True)
     @api.response(200, 'Amenity successfuly added to place')
     @api.response(404, 'Not found')
@@ -102,3 +104,23 @@ class PlaceResource(Resource):
             return {"error": str(e)}, 404
 
         return facade.place_repo.get(place_id).to_dict(), 200
+
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.expect(amenity_model, validate=True)
+    @api.response(200, 'List of review for the place retrieved successfully')
+    @api.response(404, 'Not found')
+    def get(self, place_id):
+        """Retrieve a list of all places"""
+
+        try:
+            reviews = facade.get_reviews_by_place(place_id)
+        except ValueError as e:
+            return {"error": str(e)}, 404
+
+
+        if reviews:
+            return jsonify(reviews)
+
+            # Base case if no reviews were found
+        return {"error": "No reviews found for that place"}, 404
