@@ -220,6 +220,3 @@ class HBnBFacade:
         self.review_repo.delete(review_id)
 
         return True
-
-
-facade = HBnBFacade()

@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import facade
+from app.services import facade
 from app.models.amenity import Amenity
 from app.models.place import Place
 from flask import jsonify

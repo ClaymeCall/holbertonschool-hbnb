@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services.facade import facade
+from app.services import facade
 from flask import jsonify
 
 api = Namespace("amenities", description='Amenity operations')
