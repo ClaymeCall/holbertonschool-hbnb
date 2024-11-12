@@ -15,6 +15,7 @@ user_model = api.model(
             required=True, description="Last name of the user"
             ),
         "email": fields.String(required=True, description="Email of the user"),
+        "password": fields.String(required=True, description="Password of the user"),
     },
 )
 
@@ -28,6 +29,7 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
+        print("user payload recieved")
 
         # Catching errors happening at User instanciation
         try:
@@ -35,7 +37,7 @@ class UserList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return new_user.to_dict(), 201 
+        return new_user.id, 201 
 
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
