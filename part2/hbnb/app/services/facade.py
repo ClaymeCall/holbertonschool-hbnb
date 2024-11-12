@@ -142,6 +142,20 @@ class HBnBFacade:
         self.place_repo.update(place_id, place_data)
         return place_to_update
 
+    def add_amenity_to_place(self, place_id, amenity_name):
+        # Check place existence
+        place_to_amend = self.place_repo.get(place_id)
+        if not place_to_amend:
+           raise ValueError("Place not found")
+
+        # Check amenity existence
+        existing_amenity = self.amenity_repo.get_by_attribute('name', amenity_name)
+        if not existing_amenity:
+           raise ValueError("Amenity not found")
+        
+        place_to_amend.add_amenity(existing_amenity)
+
+
     
     def create_review(self, review_data):
         """Create a new review with valid ID and if you are not its owner"""
@@ -161,12 +175,12 @@ class HBnBFacade:
         review_data.pop('user_id')
         review_data['user'] = review_author
        
-        # Replacing place_id by its corresponding Place instance
-        review_data.pop('place_id')
-        review_data['place'] = reviewed_place
-
         new_review = Review(**review_data)
         self.review_repo.add(new_review)
+
+        # Appending the review to the reviewed place
+        reviewed_place.add_review(new_review)
+
         return new_review
 
     def get_review(self, review_id):
@@ -179,8 +193,8 @@ class HBnBFacade:
 
     def get_reviews_by_place(self, place_id):
         """Get all the reviews for a specific place"""
-        place = self.place_repo.get(place_id)
-        if not place:
+        reviewed_place = self.place_repo.get(place_id)
+        if not reviewed_place:
             raise ValueError(f"Place with id {place_id} not found")
         
         reviews = [review for review in self.review_repo.get_all()

@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import facade
-from flask import jsonify
 
 api = Namespace('reviews', description='Review operations')
 
@@ -27,7 +26,7 @@ class ReviewList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
     
-        return new_review.to_dict()
+        return new_review.to_dict(), 201
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -95,7 +94,6 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-
         try:
             reviews = facade.get_reviews_by_place(place_id)
             return [review.to_dict() for review in reviews], 200
