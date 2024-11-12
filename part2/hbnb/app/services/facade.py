@@ -198,7 +198,7 @@ class HBnBFacade:
             raise ValueError(f"Place with id {place_id} not found")
         
         reviews = [review for review in self.review_repo.get_all()
-                   if review.place.id == place_id]
+                   if review.place_id == place_id]
 
         return reviews
 
