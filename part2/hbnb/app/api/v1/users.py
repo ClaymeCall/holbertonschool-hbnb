@@ -35,7 +35,7 @@ class UserList(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return new_user.to_dict()            
+        return new_user.to_dict(), 201 
 
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
@@ -58,13 +58,16 @@ class UserResource(Resource):
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
-        if not user:
-            return {"error": "User not found"}, 404
+        if user:
+            return user.to_dict(), 200
+        
+        return {"error": "User not found"}, 404
 
-        return user.to_dict(), 200
 
 
     @api.expect(user_model, validate=True)
+    @api.response(204, "User details updated successfully")
+    @api.response(400, 'Invalid input data')
     def put(self, user_id):
         user_data = api.payload
 
@@ -73,4 +76,4 @@ class UserResource(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return updated_user.to_dict(), 200
+        return updated_user.to_dict(), 204

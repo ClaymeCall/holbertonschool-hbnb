@@ -1,7 +1,9 @@
 from app.models.base_model import BaseModel
 import re
 
+
 class User(BaseModel):
+    
     EMAIL_REGEX = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$'    
 
     def __init__(self, first_name, last_name, email, is_admin=False):
