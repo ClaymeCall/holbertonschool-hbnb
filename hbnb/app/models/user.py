@@ -1,4 +1,5 @@
 from app.models.base_model import BaseModel
+from app import bcrypt
 import re
 
 
@@ -6,11 +7,13 @@ class User(BaseModel):
     
     EMAIL_REGEX = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$'    
 
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
+        print("starting new user initialization")
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.hash_password = password
         self.is_admin = is_admin
 
     @property
@@ -46,6 +49,20 @@ class User(BaseModel):
         if not re.fullmatch(self.EMAIL_REGEX, value):
             raise ValueError("Invalid email format.")
         self._email = value
+
+    @property
+    def password(self):
+        return self._password
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
+
+    @password.setter
+    def hash_password(self, value):
+        """Hashes the password before storing it."""
+        self._password = bcrypt.generate_password_hash(value).decode('utf-8')
+
 
     @property
     def is_admin(self):
