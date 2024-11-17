@@ -49,7 +49,7 @@ class UserList(Resource):
 
         # If there are users, return them as JSON
         if user_list:
-            return jsonify(user_list)
+            return user_list
 
         # Base case if no users were found
         return {"error": "No users found"}, 404

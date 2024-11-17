@@ -28,7 +28,7 @@ class Repository(ABC):
 
 
 #ORM Class with SQLAlchemy
-class SQLALchemyRepository(Repository):
+class SQLAlchemyRepository(Repository):
     def __init__(self, model):
         self.model = model
 
