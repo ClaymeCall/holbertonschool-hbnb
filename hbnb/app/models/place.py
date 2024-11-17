@@ -21,7 +21,7 @@ class Place(BaseModel):
 
         self.title = title
         self.description = description
-        self.token = price
+        self.price = price
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
@@ -133,7 +133,7 @@ class Place(BaseModel):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "price": self.token,
+            "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
