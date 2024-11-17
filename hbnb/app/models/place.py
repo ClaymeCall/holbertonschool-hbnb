@@ -54,11 +54,11 @@ class Place(BaseModel):
         self._description = value
 
     @property
-    def token(self):
+    def price(self):
         return self._price
 
     @token.setter
-    def token(self, value):
+    def price(self, value):
         if not isinstance(value, (int, float)):
             raise TypeError("Price must be a number.")
         if value < 0:
