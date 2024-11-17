@@ -3,6 +3,7 @@ from app.services import facade
 from app.models.amenity import Amenity
 from app.models.place import Place
 from flask import jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -36,9 +37,20 @@ class PlaceList(Resource):
     @api.expect(place_model, validate=True)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new place"""
+
+        current_user = get_jwt_identity()
         place_data = api.payload
+        
+        #if current_user id is same than owner_id
+        if place_data.get("owner_id") and \
+        place_data.get("owner_id") != current_user["id"]:
+            return {"error": "You can only create a place for yourself"}, 403
+        
+        #set the owner_id with the current_user authenticated
+        place_data["owner_id"] = current_user["id"]
 
         # Catching errors happening at Place instanciation
         try:
@@ -78,8 +90,19 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
+
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        if place.owner.id != current_user["id"]:
+            return {'error': 'Unauthorized action'}, 403
+
         place_data = api.payload
 
         try:
