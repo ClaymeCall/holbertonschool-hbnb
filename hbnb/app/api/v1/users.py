@@ -66,8 +66,6 @@ class UserResource(Resource):
         
         return {"error": "User not found"}, 404
 
-
-
     @api.expect(user_model, validate=True)
     @api.response(204, "User details updated successfully")
     @api.response(400, 'Invalid input data')
@@ -78,7 +76,7 @@ class UserResource(Resource):
         current_user = get_jwt_identity() 
 
         # if current user try to modify his data
-        if str(current_user["id"]) != user_id:
+        if current_user["id"] != user_id:
             return  {"error": "Unauthorized action"}, 403
 
         user_data = api.payload
