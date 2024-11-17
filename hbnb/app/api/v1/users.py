@@ -71,8 +71,21 @@ class UserResource(Resource):
     @api.expect(user_model, validate=True)
     @api.response(204, "User details updated successfully")
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, user_id):
+        """Modify user info"""
+
+        current_user = get_jwt_identity() 
+
+        # if current user try to modify his data
+        if str(current_user["id"]) != user_id:
+            return  {"error": "Unauthorized action"}, 403
+
         user_data = api.payload
+
+        # if current user try to modify his mail or pswd
+        if "email" in user_data or "password" in user_data:
+            return {"error": "You cannot modify email or password"}, 400
 
         try:
             updated_user = facade.update_user(user_id, user_data)
