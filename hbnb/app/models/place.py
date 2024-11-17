@@ -1,4 +1,3 @@
-import token
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -13,8 +12,7 @@ class Place(BaseModel):
         price,
         latitude,
         longitude,
-        owner,
-        token
+        owner
     ):
         """Initialize the Place class with its specific attributes."""
         super().__init__()
@@ -25,7 +23,6 @@ class Place(BaseModel):
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
-        self.token = token
         self.__amenities = []
         self.__reviews = []
 
@@ -57,7 +54,7 @@ class Place(BaseModel):
     def price(self):
         return self._price
 
-    @token.setter
+    @price.setter
     def price(self, value):
         if not isinstance(value, (int, float)):
             raise TypeError("Price must be a number.")
@@ -99,19 +96,6 @@ class Place(BaseModel):
             raise TypeError("Owner must be an instance of the User class.")
         self._owner = value
 
-    @property
-    def token(self):
-        return self._token
-
-    @token.setter
-    def token(self, value):
-        if not isinstance(value, str):
-            raise TypeError("Token must be a string.")
-        if not value:
-            raise ValueError("Token can't be empty.")
-        self._token = value
-
-
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
@@ -139,5 +123,4 @@ class Place(BaseModel):
             "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
             "amenities": [amenity.name for amenity in self.__amenities],
             "reviews": [review.text for review in self.__reviews],
-            "token": self.token
         }
