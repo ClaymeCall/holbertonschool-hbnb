@@ -1,3 +1,4 @@
+import token
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -12,17 +13,19 @@ class Place(BaseModel):
         price,
         latitude,
         longitude,
-        owner
+        owner,
+        token
     ):
         """Initialize the Place class with its specific attributes."""
         super().__init__()
 
         self.title = title
         self.description = description
-        self.price = price
+        self.token = price
         self.latitude = latitude
         self.longitude = longitude
         self.owner = owner
+        self.token = token
         self.__amenities = []
         self.__reviews = []
 
@@ -51,11 +54,11 @@ class Place(BaseModel):
         self._description = value
 
     @property
-    def price(self):
+    def token(self):
         return self._price
 
-    @price.setter
-    def price(self, value):
+    @token.setter
+    def token(self, value):
         if not isinstance(value, (int, float)):
             raise TypeError("Price must be a number.")
         if value < 0:
@@ -96,6 +99,19 @@ class Place(BaseModel):
             raise TypeError("Owner must be an instance of the User class.")
         self._owner = value
 
+    @property
+    def token(self):
+        return self._token
+
+    @token.setter
+    def token(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Token must be a string.")
+        if not value:
+            raise ValueError("Token can't be empty.")
+        self._token = value
+
+
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
@@ -117,10 +133,11 @@ class Place(BaseModel):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "price": self.price,
+            "price": self.token,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner": self.owner.to_dict() if isinstance(self.owner, User) else None,
             "amenities": [amenity.name for amenity in self.__amenities],
             "reviews": [review.text for review in self.__reviews],
+            "token": self.token
         }
