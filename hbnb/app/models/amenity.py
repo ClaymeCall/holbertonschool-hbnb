@@ -1,6 +1,7 @@
 '''
 This module defines the Business Logic Amenity class.
 '''
+import uuid
 from sqlalchemy.orm import validates
 from app.models.base_model import BaseModel
 from app import db
@@ -10,7 +11,7 @@ class Amenity(BaseModel):
 
     __tablename__ = 'amenities'
 
-    id = db.Column(db.Integer(30), primary_key=True, autoincrement=True)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(50), nullable=False)
 
     @validates("name")
