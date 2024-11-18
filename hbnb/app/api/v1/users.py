@@ -30,7 +30,6 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
-        print("user payload recieved")
 
         # Catching errors happening at User instanciation
         try:
@@ -72,6 +71,7 @@ class UserResource(Resource):
     @api.response(204, "User details updated successfully")
     @api.response(400, 'Invalid input data')
     def put(self, user_id):
+        """Update the informations of a user"""
         user_data = api.payload
 
         try:

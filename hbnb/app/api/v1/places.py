@@ -39,9 +39,11 @@ class PlaceList(Resource):
     def post(self):
         """Register a new place"""
         place_data = api.payload
+        print("place data received")
 
         # Catching errors happening at Place instanciation
         try:
+            print("entering try statement")
             new_place = facade.create_place(place_data)
         except ValueError as e:
             return {"error": str(e)}, 400
@@ -56,7 +58,7 @@ class PlaceList(Resource):
         place_list = facade.get_all_places()
 
         if place_list:
-            return jsonify(place_list)
+            return place_list
 
             # Base case if no places were found
         return {"error": "No place found"}, 404
@@ -111,7 +113,7 @@ class PlaceReviewList(Resource):
     @api.response(200, 'List of review for the place retrieved successfully')
     @api.response(404, 'Not found')
     def get(self, place_id):
-        """Retrieve a list of all places"""
+        """Retrieve a list of all reviews for a place"""
 
         try:
             reviews = facade.get_reviews_by_place(place_id)

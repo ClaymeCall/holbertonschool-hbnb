@@ -1,5 +1,6 @@
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.place_repository import PlaceRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -9,7 +10,7 @@ from app.models.review import Review
 class HBnBFacade:
     def __init__(self):
         self.user_repo = UserRepository()
-        self.place_repo = SQLAlchemyRepository(Place)
+        self.place_repo = PlaceRepository()
         self.amenity_repo = SQLAlchemyRepository(Amenity)
         self.review_repo = SQLAlchemyRepository(Review)
 
@@ -94,10 +95,6 @@ class HBnBFacade:
         if not existing_owner:
             raise ValueError("Owner_ID must be valid to allow place creation.")
 
-        # Replacing owner_id by its corresponding User instance
-        place_data.pop('owner_id')
-        place_data['owner'] = existing_owner
-
         # Create the new place and add it to the repo
         new_place = Place(**place_data)
         self.place_repo.add(new_place)
@@ -109,6 +106,10 @@ class HBnBFacade:
 
     def get_all_places(self):
         """Retrieves all places"""
+        places = self.place_repo.get_all()
+
+        return [place.to_dict() for place in places]
+        '''
         places = self.place_repo.get_all()
         
         # Convert each Place instance to a dictionary
@@ -126,6 +127,7 @@ class HBnBFacade:
                 place_dicts.append(place_dict)
         
         return place_dicts
+        '''
 
     def get_place_by_id(self, place_id):
         place = self.place_repo.get_by_attribute('id', place_id)
