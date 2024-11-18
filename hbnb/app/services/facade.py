@@ -1,5 +1,6 @@
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.review_repository import ReviewRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -11,7 +12,7 @@ class HBnBFacade:
         self.user_repo = UserRepository()
         self.place_repo = SQLAlchemyRepository(Place)
         self.amenity_repo = SQLAlchemyRepository(Amenity)
-        self.review_repo = SQLAlchemyRepository(Review)
+        self.review_repo = ReviewRepository()
 
     def create_user(self, user_data):
         # Checking email uniqueness
