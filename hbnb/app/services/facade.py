@@ -1,5 +1,6 @@
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.review_repository import ReviewRepository
 from app.services.repositories.place_repository import PlaceRepository
 from app.models.user import User
 from app.models.amenity import Amenity
@@ -12,7 +13,7 @@ class HBnBFacade:
         self.user_repo = UserRepository()
         self.place_repo = PlaceRepository()
         self.amenity_repo = SQLAlchemyRepository(Amenity)
-        self.review_repo = SQLAlchemyRepository(Review)
+        self.review_repo = ReviewRepository()
 
     def create_user(self, user_data):
         # Checking email uniqueness
@@ -169,19 +170,15 @@ class HBnBFacade:
         if not review_author:
             raise ValueError("User_ID must be valid to allow review creation.")
 
-        owner = reviewed_place.owner
+        owner = self.user_repo.get_by_attribute('id', reviewed_place.owner_id)
         if review_author is owner:
             raise ValueError("You can't review your own place.")
         
-        # Replacing owner_id by its corresponding User instance
-        review_data.pop('user_id')
-        review_data['user'] = review_author
-       
         new_review = Review(**review_data)
         self.review_repo.add(new_review)
 
         # Appending the review to the reviewed place
-        reviewed_place.add_review(new_review)
+        # reviewed_place.add_review(new_review)
 
         return new_review
 
