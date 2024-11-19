@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask import jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 api = Namespace("amenities", description='Amenity operations')
 
@@ -18,17 +20,23 @@ class AmenityList(Resource):
     @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(403, "Admin privileges required")
+    @jwt_required()
     def post(self):
         """Register a new amenity"""
+        current_user = get_jwt_identity()
+        if not current_user.get("is_admin"):
+            return {"error": "Admin privileges required"}, 403
+
         amenity_data = api.payload
 
         # Catching errors happening at Amenity instanciation
         try:
             new_amenity = facade.create_amenity(amenity_data)
+            return new_amenity.to_dict(), 201
+
         except ValueError as e:
             return {"error": str(e)}, 400
-
-        return new_amenity.to_dict(), 201
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(404, "No amenities found")
@@ -39,7 +47,7 @@ class AmenityList(Resource):
 
         # If there are amenities, return them as JSON
         if amenity_list:
-            return jsonify(amenity_list)
+            return jsonify(amenity_list), 200
 
         # Base case if no amenities were found
         return {"message": "No amenities found"}, 404
@@ -59,14 +67,19 @@ class AmenityResource(Resource):
 
     @api.expect(amenity_model, validate=True)
     @api.response(200, 'Amenity updated successfully')
-    @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privileges required')
+    @jwt_required()
     def put(self, amenity_id):
+        current_user = get_jwt_identity()
+        if not current_user.get("is_admin"):
+            return {"error": "Admin privileges required"}, 403
+
         amenity_data = api.payload
 
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
+            return updated_amenity.to_dict(), 200
+
         except ValueError as e:
             return {"error": str(e)}, 400
-
-        return updated_amenity.to_dict(), 200
