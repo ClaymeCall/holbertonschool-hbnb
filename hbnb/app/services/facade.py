@@ -170,7 +170,7 @@ class HBnBFacade:
         if not review_author:
             raise ValueError("User_ID must be valid to allow review creation.")
 
-        owner = self.user_repo.get_by_attribute('id', reviewed_place.owner_id)
+        owner = self.user_repo.get(reviewed_place.owner_id)
         if review_author is owner:
             raise ValueError("You can't review your own place.")
         
