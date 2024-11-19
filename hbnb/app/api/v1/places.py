@@ -88,29 +88,55 @@ class PlaceResource(Resource):
 
     @api.expect(place_model, validate=False)
     @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, "Unauthorized action")
+    @api.response(404, 'Place not found')
     @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
-
         current_user = get_jwt_identity()
-        place = facade.get_place(place_id)
-
-        if not place:
-            return {"error": "Place not found"}, 404
-
-        if place.owner.id != current_user["id"]:
-            return {'error': 'Unauthorized action'}, 403
-
-        place_data = api.payload
+        is_admin = current_user.get("is_admin", False)
 
         try:
-            updated_place = facade.update_place(place_id, place_data)
-        except ValueError as e:
-            return {"error": str(e)}, 404
+            place = facade.get_place(place_id)
 
-        return updated_place.to_dict(), 200
+            if not place:
+                return {"error": "Place not found"}, 404
+
+            if not is_admin and place.owner.id != current_user["id"]:
+                return {"error": "Unauthorized action"}, 403
+
+            place_data = api.payload
+            updated_place = facade.update_place(place_id, place_data)
+
+            return {"message": "Place updated successfully", "place":  updated_place.to_dict()}, 200
+
+        except ValueError as e:
+            return {"error": str(e)}, 400
+
+    @api.response(200, 'Place deleted successfully')
+    @api.response(400, 'Bad request - May verify ID')
+    @api.response(404, 'Place not found')
+    @api.response(403, 'Unhautorized action')
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place"""
+        current_user = get_jwt_identity()
+        is_admin = current_user.get("is_admin", False)
+
+        place = facade.get_place(place_id)
+
+        try:
+            if not place:
+                return {"error": "Place not found"}, 404
+
+            if not is_admin and place.owner.id != current_user["id"]:
+                return {"error": "Unauthorized action"}, 403
+            
+            return facade.delete_place(place_id), 200
+        
+        except ValueError as e:
+                return {"error": str(e)}, 400
 
 @api.route('/<place_id>/amenities')
 class PlaceAmenity(Resource):
