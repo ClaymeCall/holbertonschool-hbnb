@@ -22,5 +22,5 @@ class Review(BaseModel):
             "place_id": self.place_id,
             "rating": self.rating,
             "text": self.text,
-            "user": self.user.to_dict() if isinstance(self.user, User) else None,
+            "user_id": self.user_id,
         }
