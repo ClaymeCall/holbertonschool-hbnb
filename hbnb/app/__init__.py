@@ -16,12 +16,29 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 
-# App creation function
+authorizations = {
+    'Bearer Auth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer {your_token}"'
+    }
+}
+
 def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
+    app.config['JWT_SECRET_KEY'] = app.config.get('SECRET_KEY', 'your_secret_key_here')
+
+    api = Api(
+        app,
+        version='1.0',
+        title='HBnB API',
+        description='HBnB Application API',
+        security='Bearer Auth',
+        authorizations=authorizations
+    )
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
