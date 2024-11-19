@@ -91,7 +91,7 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         # Checking Owner existence
-        existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
+        existing_owner = self.user_repo.get(place_data.get('owner_id'))
         if not existing_owner:
             raise ValueError("Owner_ID must be valid to allow place creation.")
 
@@ -161,11 +161,11 @@ class HBnBFacade:
     
     def create_review(self, review_data):
         """Create a new review with valid ID and if you are not its owner"""
-        reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
+        reviewed_place = self.place_repo.get(review_data.get('place_id'))
         if not reviewed_place:
             raise ValueError("Place_ID must be valid to allow review creation.")
         
-        review_author = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
+        review_author = self.user_repo.get(review_data.get('user_id'))
         if not review_author:
             raise ValueError("User_ID must be valid to allow review creation.")
 
