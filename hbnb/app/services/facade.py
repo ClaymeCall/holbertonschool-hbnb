@@ -138,6 +138,14 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, place_data)
         return place_to_update
+    
+    def delete_place(self, place_id):
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError("Place not found")
+
+        self.place_repo.delete(place_id)
+        return True
 
     def add_amenity_to_place(self, place_id, amenity_name):
         # Check place existence
@@ -152,8 +160,6 @@ class HBnBFacade:
         
         place_to_amend.add_amenity(existing_amenity)
 
-
-    
     def create_review(self, review_data):
         """Create a new review with valid ID and if you are not its owner"""
         reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
