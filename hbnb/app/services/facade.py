@@ -1,6 +1,8 @@
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
 from app.services.repositories.amenity_repository import AmenityRepository
+from app.services.repositories.review_repository import ReviewRepository
+from app.services.repositories.place_repository import PlaceRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -10,9 +12,9 @@ from app.models.review import Review
 class HBnBFacade:
     def __init__(self):
         self.user_repo = UserRepository()
-        self.place_repo = SQLAlchemyRepository(Place)
         self.amenity_repo = AmenityRepository()
-        self.review_repo = SQLAlchemyRepository(Review)
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
 
     def create_user(self, user_data):
         # Checking email uniqueness
@@ -101,13 +103,9 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         # Checking Owner existence
-        existing_owner = self.user_repo.get_by_attribute('id', place_data.get('owner_id'))
+        existing_owner = self.user_repo.get(place_data.get('owner_id'))
         if not existing_owner:
             raise ValueError("Owner_ID must be valid to allow place creation.")
-
-        # Replacing owner_id by its corresponding User instance
-        place_data.pop('owner_id')
-        place_data['owner'] = existing_owner
 
         # Create the new place and add it to the repo
         new_place = Place(**place_data)
@@ -120,6 +118,10 @@ class HBnBFacade:
 
     def get_all_places(self):
         """Retrieves all places"""
+        places = self.place_repo.get_all()
+
+        return [place.to_dict() for place in places]
+        '''
         places = self.place_repo.get_all()
         
         # Convert each Place instance to a dictionary
@@ -137,6 +139,7 @@ class HBnBFacade:
                 place_dicts.append(place_dict)
         
         return place_dicts
+        '''
 
     def get_place_by_id(self, place_id):
         place = self.place_repo.get_by_attribute('id', place_id)
@@ -170,27 +173,23 @@ class HBnBFacade:
     
     def create_review(self, review_data):
         """Create a new review with valid ID and if you are not its owner"""
-        reviewed_place = self.place_repo.get_by_attribute('id', review_data.get('place_id'))
+        reviewed_place = self.place_repo.get(review_data.get('place_id'))
         if not reviewed_place:
             raise ValueError("Place_ID must be valid to allow review creation.")
         
-        review_author = self.user_repo.get_by_attribute('id', review_data.get('user_id'))
+        review_author = self.user_repo.get(review_data.get('user_id'))
         if not review_author:
             raise ValueError("User_ID must be valid to allow review creation.")
 
-        owner = reviewed_place.owner
+        owner = self.user_repo.get(reviewed_place.owner_id)
         if review_author is owner:
             raise ValueError("You can't review your own place.")
         
-        # Replacing owner_id by its corresponding User instance
-        review_data.pop('user_id')
-        review_data['user'] = review_author
-       
         new_review = Review(**review_data)
         self.review_repo.add(new_review)
 
         # Appending the review to the reviewed place
-        reviewed_place.add_review(new_review)
+        # reviewed_place.add_review(new_review)
 
         return new_review
 

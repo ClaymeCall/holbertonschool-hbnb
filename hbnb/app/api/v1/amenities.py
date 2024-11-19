@@ -60,6 +60,7 @@ class AmenityResource(Resource):
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
+        """Update the informations of an amenity"""
         amenity_data = api.payload
         """update an amenity data by id"""
 
