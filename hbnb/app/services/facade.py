@@ -1,5 +1,6 @@
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.amenity_repository import AmenityRepository
 from app.services.repositories.review_repository import ReviewRepository
 from app.services.repositories.place_repository import PlaceRepository
 from app.models.user import User
@@ -11,8 +12,8 @@ from app.models.review import Review
 class HBnBFacade:
     def __init__(self):
         self.user_repo = UserRepository()
+        self.amenity_repo = AmenityRepository()
         self.place_repo = PlaceRepository()
-        self.amenity_repo = SQLAlchemyRepository(Amenity)
         self.review_repo = ReviewRepository()
 
     def create_user(self, user_data):
@@ -66,19 +67,18 @@ class HBnBFacade:
 
         return new_amenity
 
-
     def get_amenity(self, amenity_id):
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
         amenities = self.amenity_repo.get_all()
-        return [amenity.__dict__ for amenity in amenities]
+        return [amenity.to_dict() for amenity in amenities]
 
     def update_amenity(self, amenity_id, amenity_data):
         amenity_to_update = self.get_amenity(amenity_id)
 
         if not amenity_to_update:
-            raise ValueError("error: Amenity not found")
+            raise ValueError("Amenity not found")
 
         # Checking name uniqueness
         new_name = amenity_data.get('name')
@@ -88,7 +88,18 @@ class HBnBFacade:
 
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity_to_update
+    
+    """def delete_amenity(self, amenity_id, current_user):
 
+        amenity = self.get_amenity(amenity_id)
+        if not amenity:
+           raise ValueError("Amenity not found")
+
+        place = amenity.place
+        if not place or place.owner.id != current_user["id"]:
+            raise PermissionError("Not allowed: you are not the owner of this place"}, 403
+        
+        self.amenity_repo.delete(amenity_id)"""
 
     def create_place(self, place_data):
         # Checking Owner existence
