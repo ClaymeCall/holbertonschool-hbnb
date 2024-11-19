@@ -24,10 +24,12 @@ class User(BaseModel):
 
     def hash_password(self, value):
         """Hashes the password before storing it."""
-        self._password = bcrypt.generate_password_hash(value).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(value).decode('utf-8')
+        self.password = hashed_password
 
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
+
         return bcrypt.check_password_hash(self.password, password)
 
     def to_dict(self):
@@ -36,4 +38,5 @@ class User(BaseModel):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
+            "password": self.password,
         }

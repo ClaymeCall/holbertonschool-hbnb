@@ -211,6 +211,21 @@ class HBnBFacade:
                    if review.place_id == place_id]
 
         return reviews
+    
+    def get_review_by_place_and_user(self, place_id, user_id):
+        """Retrieves a review by its place and user"""
+        reviewed_place = self.place_repo.get(place_id)
+        if not reviewed_place:
+            raise ValueError (f"Place with id {place_id} not found")
+        
+        searched_review = None
+
+        for review in self.review_repo.get_all():
+            if review.place_id == place_id and review.user_id == user_id:
+                searched_review = review
+                break
+
+        return searched_review
 
     def update_review(self, review_id, review_data):
         """ Update a review if it exists"""
