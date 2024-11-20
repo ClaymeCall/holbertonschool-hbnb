@@ -19,10 +19,11 @@ class Amenity(BaseModel):
     places = relationship(
         'Place',
         secondary=place_amenity,
-        backref=db.backref('niquetamere', lazy=True)
+        back_populates='amenities',
+        lazy=True
     )
 
-    @validates("name")
+    @validates("name", include_backrefs=False)
     def validate_name(self, key, value):
         if not isinstance(value, str):
             raise TypeError("Name must be a string.")
