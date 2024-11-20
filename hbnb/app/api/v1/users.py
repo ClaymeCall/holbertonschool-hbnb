@@ -54,6 +54,9 @@ class UserList(Resource):
     @jwt_required()
     def post(self):
         """Register a new user"""
+        if not facade.get_all_users():
+            return {"error": "initialize system first with: /first-admin-user"}, 403
+
         current_user = get_jwt_identity() 
         if not current_user.get("is_admin"):
             return {"error": "Admin privileges required"}, 403
