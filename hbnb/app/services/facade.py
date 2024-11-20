@@ -28,7 +28,7 @@ class HBnBFacade:
     
     def get_all_users(self):
         users = self.user_repo.get_all()
-        return [user.__dict__ for user in users]
+        return [user.to_dict() for user in users]
 
     def get_user_by_email(self, email):
         if not email:
@@ -67,7 +67,7 @@ class HBnBFacade:
 
     def get_all_amenities(self):
         amenities = self.amenity_repo.get_all()
-        return [amenity.__dict__ for amenity in amenities]
+        return [amenity.to_dict() for amenity in amenities]
 
     def update_amenity(self, amenity_id, amenity_data):
         amenity_to_update = self.get_amenity(amenity_id)

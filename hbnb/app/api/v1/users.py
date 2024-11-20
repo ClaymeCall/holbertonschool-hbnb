@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask import jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -80,7 +79,7 @@ class UserList(Resource):
 
         # If there are users, return them as JSON
         if user_list:
-            return user_list, 200
+            return user_list
 
         # Base case if no users were found
         return {"error": "No users found"}, 404
