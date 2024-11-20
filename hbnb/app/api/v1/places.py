@@ -148,20 +148,17 @@ class PlaceAmenity(Resource):
 
 @api.route('/<place_id>/reviews')
 class PlaceReviewList(Resource):
-    @api.expect(amenity_model, validate=True)
     @api.response(200, 'List of review for the place retrieved successfully')
     @api.response(404, 'Not found')
     def get(self, place_id):
         """Retrieve a list of all reviews for a place"""
 
         try:
-            reviews = facade.get_reviews_by_place(place_id)
+            if facade.get_reviews_by_place(place_id):
+                return {"message": "List of review for the place retrieved successfully"}, 200
+
+            else:
+                return {"error": "No reviews found for that place"}, 404
+
         except ValueError as e:
             return {"error": str(e)}, 404
-
-
-        if reviews:
-            return jsonify(reviews)
-
-            # Base case if no reviews were found
-        return {"error": "No reviews found for that place"}, 404
