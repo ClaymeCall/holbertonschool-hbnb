@@ -102,7 +102,7 @@ class UserResource(Resource):
     @api.response(403, "Unauthorized action")
     @jwt_required()
     def put(self, user_id):
-        """Modify user info"""
+        """Update the informations of a user"""
 
         current_user = get_jwt_identity() 
 

@@ -9,9 +9,7 @@ api = Namespace("amenities", description='Amenity operations')
 # Define the amenity model for input validation and documentation
 amenity_model = api.model(
     'Amenity',
-    {
-    'name': fields.String(required=True, description='Name of the amenity')
-    },
+{'name': fields.String(required=True, description='Name of the amenity')},
 )
 
 
@@ -47,7 +45,7 @@ class AmenityList(Resource):
 
         # If there are amenities, return them as JSON
         if amenity_list:
-            return jsonify(amenity_list), 200
+            return amenity_list
 
         # Base case if no amenities were found
         return {"message": "No amenities found"}, 404
@@ -76,6 +74,7 @@ class AmenityResource(Resource):
             return {"error": "Admin privileges required"}, 403
 
         amenity_data = api.payload
+        """update an amenity data by id"""
 
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
@@ -83,3 +82,24 @@ class AmenityResource(Resource):
 
         except ValueError as e:
             return {"error": str(e)}, 400
+
+        return updated_amenity.to_dict(), 200
+"""
+    @api.response(200, 'Amenity deleted successfully')
+    @api.response(404, 'Amenity not found')
+    @api.response(403, 'Not allowed you are not the owner of this place')
+    def delete(self, amenity_id):
+        ""delete amenity by id if user is the owner of amenity's place""
+
+        try:
+            current_user = facade.get_current_user()
+            facade.delete_amenity(amenity_id, current_user)
+
+        except ValueError as e:
+            return {"error": str(e)}, 404
+
+        except ValueError as e:
+            return {"error": str(e)}, 403
+
+        return {"message": "Amenity deleted successfully"}, 200
+"""
