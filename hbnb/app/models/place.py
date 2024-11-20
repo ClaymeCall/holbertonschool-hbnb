@@ -5,7 +5,6 @@ from app import db
 from app.models.amenity import Amenity
 
 
-
 class Place(BaseModel):
     """Initialize the Place class with its specific attributes."""
     __tablename__ = 'places'
@@ -35,6 +34,7 @@ class Place(BaseModel):
         if not (1 <= len(value) <= 100):
             raise ValueError("Title must be between 1 and 100 characters.")
         return value
+
 
     @validates("description", include_backrefs=False)
     def description_validation(self, key, value):
@@ -72,19 +72,13 @@ class Place(BaseModel):
         return value
 
 
-    '''
-    @owner.setter
-    def owner(self, value):
-        if not isinstance(value, User):
-            raise TypeError("Owner must be an instance of the User class.")
-        self._owner = value
-
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
             raise ValueError("review must be an instance of the Review class.")
         self.__reviews.append(review)
-    ''' 
+
+
     def add_amenity(self, amenity):
         """Add amenity to place."""
         if not isinstance(amenity, Amenity):
@@ -94,6 +88,7 @@ class Place(BaseModel):
             raise ValueError("amenity already registered for that place")
         self.amenities.append(amenity)
         db.session.commit()
+
 
     def to_dict(self):
         return {
@@ -105,5 +100,10 @@ class Place(BaseModel):
             "longitude": self.longitude,
             "owner_id": self.owner_id,
             "amenities": [amenity.name for amenity in self.amenities],
-            #"reviews": [review.text for review in self.reviews],
+            "reviews": [
+                {
+                    "text": review.text,
+                    "rating": review.rating,
+                } for review in self.reviews
+            ],
         }
