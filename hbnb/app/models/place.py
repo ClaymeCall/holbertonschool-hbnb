@@ -2,6 +2,8 @@ from sqlalchemy.orm import relationship, validates
 from app.models.base_model import BaseModel
 from app.models.association_tables import place_amenity
 from app import db
+from app.models.amenity import Amenity
+
 
 
 class Place(BaseModel):
@@ -17,10 +19,11 @@ class Place(BaseModel):
 
     # Relationships
     reviews = relationship('Review', backref='place', lazy=True)
+    
     amenities = relationship(
         'Amenity',
         secondary=place_amenity,
-        backref=db.backref('niquetonpere', lazy=True),
+        back_populates='places',
         lazy=True
     )
 
@@ -81,16 +84,16 @@ class Place(BaseModel):
         if not isinstance(review, Review):
             raise ValueError("review must be an instance of the Review class.")
         self.__reviews.append(review)
-
+    ''' 
     def add_amenity(self, amenity):
         """Add amenity to place."""
         if not isinstance(amenity, Amenity):
             raise ValueError("amenity must be an instance of the Amenity class.")
 
-        if amenity in self.__amenities:
+        if amenity in self.amenities:
             raise ValueError("amenity already registered for that place")
-        self.__amenities.append(amenity)
-    '''
+        self.amenities.append(amenity)
+        db.session.commit()
 
     def to_dict(self):
         return {
@@ -101,6 +104,6 @@ class Place(BaseModel):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner_id": self.owner_id,
-            #"amenities": [amenity.name for amenity in self.amenities],
+            "amenities": [amenity.name for amenity in self.amenities],
             #"reviews": [review.text for review in self.reviews],
         }
