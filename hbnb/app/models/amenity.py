@@ -2,8 +2,9 @@
 This module defines the Business Logic Amenity class.
 '''
 import uuid
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from app.models.base_model import BaseModel
+from app.models.association_tables import place_amenity
 from app import db
 
 
@@ -13,6 +14,13 @@ class Amenity(BaseModel):
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(50), nullable=False)
+
+    # Relationships
+    places = relationship(
+        'Place',
+        secondary=place_amenity,
+        backref=db.backref('niquetamere', lazy=True)
+    )
 
     @validates("name")
     def validate_name(self, key, value):

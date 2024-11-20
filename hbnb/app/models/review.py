@@ -3,10 +3,6 @@ from app.models.user import User
 from app import db
 
 
-users_list = []
-places_list = []
-
-
 class Review(BaseModel):
     __tablename__ = 'reviews'
 

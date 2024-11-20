@@ -1,5 +1,6 @@
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 from app.models.base_model import BaseModel
+from app.models.association_tables import place_amenity
 from app import db
 
 
@@ -12,7 +13,16 @@ class Place(BaseModel):
     price = db.Column(db.Float(), nullable=False)
     latitude = db.Column(db.Float(), nullable=False)
     longitude = db.Column(db.Float(), nullable=False)
-    owner_id = db.Column(db.String(36), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
+    # Relationships
+    reviews = relationship('Review', backref='place', lazy=True)
+    amenities = relationship(
+        'Amenity',
+        secondary=place_amenity,
+        backref=db.backref('niquetonpere', lazy=True),
+        lazy=True
+    )
 
 
     @validates("title", include_backrefs=False)
@@ -91,6 +101,6 @@ class Place(BaseModel):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner_id": self.owner_id,
-            # "amenities": [amenity.name for amenity in self.__amenities],
-            # "reviews": [review.text for review in self.__reviews],
+            #"amenities": [amenity.name for amenity in self.amenities],
+            #"reviews": [review.text for review in self.reviews],
         }
