@@ -21,7 +21,6 @@ user_model = api.model(
     },
 )
 
-
 @api.route("/first-admin-user")
 class SystemInitialization(Resource):
     @api.expect(user_model, validate=True)

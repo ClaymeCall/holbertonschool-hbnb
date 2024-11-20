@@ -1,6 +1,8 @@
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 from app.models.base_model import BaseModel
+from app.models.association_tables import place_amenity
 from app import db
+from app.models.amenity import Amenity
 
 
 class Place(BaseModel):
@@ -12,7 +14,17 @@ class Place(BaseModel):
     price = db.Column(db.Float(), nullable=False)
     latitude = db.Column(db.Float(), nullable=False)
     longitude = db.Column(db.Float(), nullable=False)
-    owner_id = db.Column(db.String(36), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
+    # Relationships
+    reviews = relationship('Review', backref='place', lazy=True)
+    
+    amenities = relationship(
+        'Amenity',
+        secondary=place_amenity,
+        back_populates='places',
+        lazy=True
+    )
 
 
     @validates("title", include_backrefs=False)
@@ -22,6 +34,7 @@ class Place(BaseModel):
         if not (1 <= len(value) <= 100):
             raise ValueError("Title must be between 1 and 100 characters.")
         return value
+
 
     @validates("description", include_backrefs=False)
     def description_validation(self, key, value):
@@ -59,28 +72,23 @@ class Place(BaseModel):
         return value
 
 
-    '''
-    @owner.setter
-    def owner(self, value):
-        if not isinstance(value, User):
-            raise TypeError("Owner must be an instance of the User class.")
-        self._owner = value
-
     def add_review(self, review):
         """Add review to place."""
         if not isinstance(review, Review):
             raise ValueError("review must be an instance of the Review class.")
         self.__reviews.append(review)
 
+
     def add_amenity(self, amenity):
         """Add amenity to place."""
         if not isinstance(amenity, Amenity):
             raise ValueError("amenity must be an instance of the Amenity class.")
 
-        if amenity in self.__amenities:
+        if amenity in self.amenities:
             raise ValueError("amenity already registered for that place")
-        self.__amenities.append(amenity)
-    '''
+        self.amenities.append(amenity)
+        db.session.commit()
+
 
     def to_dict(self):
         return {
@@ -91,6 +99,11 @@ class Place(BaseModel):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "owner_id": self.owner_id,
-            # "amenities": [amenity.name for amenity in self.__amenities],
-            # "reviews": [review.text for review in self.__reviews],
+            "amenities": [amenity.name for amenity in self.amenities],
+            "reviews": [
+                {
+                    "text": review.text,
+                    "rating": review.rating,
+                } for review in self.reviews
+            ],
         }

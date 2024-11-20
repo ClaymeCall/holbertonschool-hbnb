@@ -31,6 +31,7 @@ def create_app(config_class="config.DevelopmentConfig"):
 
     app.config['JWT_SECRET_KEY'] = app.config.get('SECRET_KEY', 'your_secret_key_here')
 
+
     api = Api(
         app,
         version='1.0',
