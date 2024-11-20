@@ -83,7 +83,6 @@ class AmenityResource(Resource):
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return updated_amenity.to_dict(), 200
 """
     @api.response(200, 'Amenity deleted successfully')
     @api.response(404, 'Amenity not found')
