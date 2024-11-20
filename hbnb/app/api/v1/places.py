@@ -1,7 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from app.models.amenity import Amenity
-from app.models.place import Place
 from flask import jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -27,8 +25,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    #'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    #'owner_id': fields.String(required=True, description='ID of the owner'),
 })
 
 
@@ -44,17 +41,11 @@ class PlaceList(Resource):
         current_user = get_jwt_identity()
         place_data = api.payload
         
-        #if current_user id is same than owner_id
-        if place_data.get("owner_id") and \
-        place_data.get("owner_id") != current_user["id"]:
-            return {"error": "You can only create a place for yourself"}, 403
-        
-        #set the owner_id with the current_user authenticated
+        # Set the owner_id with the current_user authenticated
         place_data["owner_id"] = current_user["id"]
 
         # Catching errors happening at Place instanciation
         try:
-            print("entering try statement")
             new_place = facade.create_place(place_data)
         except ValueError as e:
             return {"error": str(e)}, 400
