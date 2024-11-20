@@ -23,6 +23,28 @@ user_model = api.model(
 )
 
 
+@api.route("/first-admin-user")
+class SystemInitialization(Resource):
+    @api.expect(user_model, validate=True)
+    @api.response(201, "Admin user successfully created")
+    @api.response(400, "Invalid input data")
+    @api.response(403, "Already initialized")
+    def post(self):
+        """Initialize with first admin user"""
+        if facade.get_all_users():
+            return {"error": "Already initialized"}, 403
+
+        user_data = api.payload
+        user_data["is_admin"] = True
+
+        try:
+            new_admin = facade.create_user(user_data)
+            return {"message": "Admin user successfully created",
+                    "user_id": new_admin.id}, 201
+
+        except ValueError as e:
+            return {"error": str(e)}, 400 
+
 @api.route("/")
 class UserList(Resource):
     @api.expect(user_model, validate=True)
@@ -55,7 +77,7 @@ class UserList(Resource):
 
         # If there are users, return them as JSON
         if user_list:
-            return jsonify(user_list), 200
+            return user_list, 200
 
         # Base case if no users were found
         return {"error": "No users found"}, 404
