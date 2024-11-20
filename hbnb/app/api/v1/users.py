@@ -1,6 +1,5 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask import jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace("users", description="User operations")
@@ -19,7 +18,6 @@ user_model = api.model(
         "password": fields.String(required=True, description="Password of the user"),
     },
 )
-
 
 
 @api.route("/")
