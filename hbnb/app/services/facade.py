@@ -89,17 +89,19 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity_to_update
     
-    """def delete_amenity(self, amenity_id, current_user):
+    """def delete_amenity(self, amenity_id):
 
         amenity = self.get_amenity(amenity_id)
         if not amenity:
            raise ValueError("Amenity not found")
-
-        place = amenity.place
-        if not place or place.owner.id != current_user["id"]:
-            raise PermissionError("Not allowed: you are not the owner of this place"}, 403
         
-        self.amenity_repo.delete(amenity_id)"""
+        try:
+            self.amenity_repo.delete(amenity_id)
+            return True
+
+        except Exception as e:
+            raise ValueError(f"Deletion failed: {str(e)}")
+    """
 
     def create_place(self, place_data):
         # Checking Owner existence
@@ -155,6 +157,14 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, place_data)
         return place_to_update
+    
+    def delete_place(self, place_id):
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError("Place not found")
+
+        self.place_repo.delete(place_id)
+        return True
 
     def add_amenity_to_place(self, place_id, amenity_name):
         # Check place existence
@@ -169,8 +179,6 @@ class HBnBFacade:
         
         place_to_amend.add_amenity(existing_amenity)
 
-
-    
     def create_review(self, review_data):
         """Create a new review with valid ID and if you are not its owner"""
         reviewed_place = self.place_repo.get(review_data.get('place_id'))
@@ -198,7 +206,7 @@ class HBnBFacade:
         return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
-        """Get ll the reviews"""
+        """Get all the reviews"""
         return (self.review_repo.get_all())
 
     def get_reviews_by_place(self, place_id):
