@@ -19,6 +19,7 @@ with app.app_context():
 
     # Create users and generate tokens
     user_data_list = [
+        {"first_name": "admin", "last_name": "admin", "email": "admin@admin.com", "password": "admin", "is_admin": True},
         {"first_name": "Nicolas", "last_name": "Martinez", "email": "n.martinez@uwu.com", "password": "string", "is_admin": False},
         {"first_name": "Clément", "last_name": "Callejon", "email": "c.callejon@uwu.com", "password": "string", "is_admin": False},
         {"first_name": "David", "last_name": "Vaucheret", "email": "d.vaucheret@uwu.com", "password": "string", "is_admin": False},
@@ -43,7 +44,7 @@ with app.app_context():
         print(f"Token for {user.first_name}: {token}")
 
     # Nicolas creates a place "Cosy Appartment"
-    nicolas = users[0]
+    nicolas = users[1]
     cosy_apt_data = {
         "title": "Cosy Appartment",
         "description": "Come discover the city in this ideally situated apartment.",
@@ -56,7 +57,7 @@ with app.app_context():
     print(f"Place '{cosy_apt.title}' created by {nicolas.first_name}.")
 
     # Louis creates a place "Beautiful Chalet"
-    louis = users[3]
+    louis = users[4]
     btfl_chalet_data = {
         "title": "Beautiful Chalet",
         "description": "Nice and cosy cocoon for discovering the forest life with your family.",
@@ -94,8 +95,8 @@ with app.app_context():
 
     # Clément and David create reviews for "Cosy Appartment"
     review_data_list = [
-        {"place_id": cosy_apt.id, "rating": 5, "text": "This flat was amazing and all the commodities were there. I recommend !", "user_id": users[1].id},  # Clément
-        {"place_id": cosy_apt.id, "rating": 2, "text": "I would have liked a bit more light in the living room.", "user_id": users[2].id}  # David
+        {"place_id": cosy_apt.id, "rating": 5, "text": "This flat was amazing and all the commodities were there. I recommend !", "user_id": users[2].id},  # Clément
+        {"place_id": cosy_apt.id, "rating": 2, "text": "I would have liked a bit more light in the living room.", "user_id": users[3].id}  # David
     ]
 
     for review_data in review_data_list:
