@@ -88,19 +88,19 @@ class ReviewResource(Resource):
     @jwt_required()
     def put(self, review_id):
         """Update a review's information"""
-        
         current_user = get_jwt_identity()
-
-        review_data = api.payload
+        is_admin = current_user.get("is_admin", False)  
 
         try:
             existing_review = facade.get_review(review_id)
+
             if not existing_review:
                 return {"error": "Review not found"}, 404
             
-            if existing_review.user.id != current_user["id"]:
+            if not is_admin and existing_review.user_id != current_user["id"]:
                 return {"error": "Unauthorized action"}, 403
             
+            review_data = api.payload
             update_review = facade.update_review(review_id, review_data)
             return {"message": "Review succesfully updated:",
                             "review": update_review.to_dict()}, 200
@@ -110,13 +110,14 @@ class ReviewResource(Resource):
 
 
     @api.response(200, 'Review deleted successfully')
+    @api.response(400, 'Invalid input data')
     @api.response(404, 'Review not found')
     @api.response(403, 'Unauthorized action')
     @jwt_required()
     def delete(self, review_id):
         """Delete a review"""
-
         current_user = get_jwt_identity()
+        is_admin = current_user.get("is_admin", False)
 
         try:
             existing_review = facade.get_review(review_id)
@@ -124,16 +125,15 @@ class ReviewResource(Resource):
             if not existing_review:
                 return {"error": "'Review not found"}, 404
 
-            if existing_review.user.id != current_user["id"]:
+            if not is_admin and existing_review.user_id != current_user["id"]:
                 return {"error": "Unauthorized action"}, 403
 
-            result = facade.delete_review(review_id)
-
-            if result:
-                return {"message": "Review successfuly deleted"}
+            delete_review_result = facade.delete_review(review_id)
 
         except ValueError as e:
-            return {"error": str(e)}, 404
+            return {"error": str(e)}, 400
+
+        return {"message": "Review deleted successfully", "result": delete_review_result}, 200
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
