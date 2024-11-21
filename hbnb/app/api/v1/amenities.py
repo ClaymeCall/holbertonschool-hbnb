@@ -1,15 +1,14 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask import jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 api = Namespace("amenities", description='Amenity operations')
 
 # Define the amenity model for input validation and documentation
 amenity_model = api.model(
     'Amenity',
-    {
-    'name': fields.String(required=True, description='Name of the amenity')
-    },
+{'name': fields.String(required=True, description='Name of the amenity')},
 )
 
 
@@ -18,8 +17,14 @@ class AmenityList(Resource):
     @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(403, "Admin privileges required")
+    @jwt_required()
     def post(self):
         """Register a new amenity"""
+        current_user = get_jwt_identity()
+        if not current_user.get("is_admin"):
+            return {"error": "Admin privileges required"}, 403
+
         amenity_data = api.payload
 
         # Catching errors happening at Amenity instanciation
@@ -39,7 +44,7 @@ class AmenityList(Resource):
 
         # If there are amenities, return them as JSON
         if amenity_list:
-            return jsonify(amenity_list)
+            return amenity_list
 
         # Base case if no amenities were found
         return {"message": "No amenities found"}, 404
@@ -59,10 +64,16 @@ class AmenityResource(Resource):
 
     @api.expect(amenity_model, validate=True)
     @api.response(200, 'Amenity updated successfully')
-    @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
+    @api.response(403, 'Admin privileges required')
+    @jwt_required()
     def put(self, amenity_id):
+        current_user = get_jwt_identity()
+        if not current_user.get("is_admin"):
+            return {"error": "Admin privileges required"}, 403
+
         amenity_data = api.payload
+        """update an amenity data by id"""
 
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
@@ -70,3 +81,37 @@ class AmenityResource(Resource):
             return {"error": str(e)}, 400
 
         return updated_amenity.to_dict(), 200
+
+
+    @api.response(200, 'Amenity deleted successfully')
+    @api.response(404, 'Amenity not found')
+    @api.response(403, 'Not allowed you are not the owner of this place')
+    @api.response(500, 'Unexpected error')
+    @jwt_required()
+    def delete(self, amenity_id):
+        """delete amenity by id if user is the owner any associated places"""
+        current_user = get_jwt_identity()
+        is_admin = current_user.get("is_admin", False)
+
+        try:
+            amenity = facade.get_amenity(amenity_id)
+
+
+            if not amenity:
+                raise ValueError("Amenity not found")
+            
+            if not is_admin:
+                raise PermissionError("Not allowed: you don't have admin privileges")
+
+            amenity_deletion_result = facade.delete_amenity(amenity_id)
+
+        except ValueError as e:
+            return {"error": str(e)}, 404
+
+        except PermissionError as e:
+            return {"error": str(e)}, 403
+        
+        except Exception as e:
+            return {"error": "Unexpected error" + str(e)} , 500
+
+        return {"message": "Amenity deleted successfully", "result": amenity_deletion_result}, 200
