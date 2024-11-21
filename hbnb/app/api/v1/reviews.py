@@ -128,11 +128,12 @@ class ReviewResource(Resource):
             if not is_admin and existing_review.user_id != current_user["id"]:
                 return {"error": "Unauthorized action"}, 403
 
-            if  facade.delete_review(review_id):
-                return {"message": "Review deleted successfully"}, 200
+            delete_review_result = facade.delete_review(review_id)
 
         except ValueError as e:
             return {"error": str(e)}, 400
+
+        return {"message": "Review deleted successfully", "result": delete_review_result}, 200
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):

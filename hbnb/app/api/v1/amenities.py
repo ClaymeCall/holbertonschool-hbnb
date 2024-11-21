@@ -30,10 +30,10 @@ class AmenityList(Resource):
         # Catching errors happening at Amenity instanciation
         try:
             new_amenity = facade.create_amenity(amenity_data)
-            return new_amenity.to_dict(), 201
-
         except ValueError as e:
             return {"error": str(e)}, 400
+
+        return new_amenity.to_dict(), 201
 
     @api.response(200, 'List of amenities retrieved successfully')
     @api.response(404, "No amenities found")
@@ -77,35 +77,33 @@ class AmenityResource(Resource):
 
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
-            return updated_amenity.to_dict(), 200
-
         except ValueError as e:
             return {"error": str(e)}, 400
 
-"""
+        return updated_amenity.to_dict(), 200
+
+
     @api.response(200, 'Amenity deleted successfully')
     @api.response(404, 'Amenity not found')
     @api.response(403, 'Not allowed you are not the owner of this place')
     @api.response(500, 'Unexpected error')
     @jwt_required()
     def delete(self, amenity_id):
-        ""delete amenity by id if user is the owner any associated places""
+        """delete amenity by id if user is the owner any associated places"""
         current_user = get_jwt_identity()
         is_admin = current_user.get("is_admin", False)
 
         try:
             amenity = facade.get_amenity(amenity_id)
 
+
             if not amenity:
                 raise ValueError("Amenity not found")
             
-            user_owner_place = any(place.owner.id == current_user["id"]for place in amenity.places)
+            if not is_admin:
+                raise PermissionError("Not allowed: you don't have admin privileges")
 
-            if not is_admin or not user_owner_place:
-                raise PermissionError("Not allowed: you are not the owner of any associated place")
-
-            if facade.delete_amenity(amenity_id):
-                return {"message": "Amenity deleted successfully"}, 200
+            amenity_deletion_result = facade.delete_amenity(amenity_id)
 
         except ValueError as e:
             return {"error": str(e)}, 404
@@ -115,4 +113,5 @@ class AmenityResource(Resource):
         
         except Exception as e:
             return {"error": "Unexpected error" + str(e)} , 500
-"""
+
+        return {"message": "Amenity deleted successfully", "result": amenity_deletion_result}, 200

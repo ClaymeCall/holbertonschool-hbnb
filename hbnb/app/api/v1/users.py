@@ -37,11 +37,14 @@ class SystemInitialization(Resource):
 
         try:
             new_admin = facade.create_user(user_data)
-            return {"message": "Admin user successfully created",
-                    "user_id": new_admin.id}, 201
 
         except ValueError as e:
             return {"error": str(e)}, 400 
+
+        return {
+            "message": "Admin user successfully created",
+            "user_id": new_admin.id
+        }, 201
 
 @api.route("/")
 class UserList(Resource):
@@ -64,10 +67,11 @@ class UserList(Resource):
         # Catching errors happening at User instanciation
         try:
             new_user = facade.create_user(user_data)
-            return new_user.id, 201
 
         except ValueError as e:
             return {"error": str(e)}, 400 
+
+        return new_user.id, 201
 
     @api.response(200, "User details retrieved successfully")
     @api.response(404, "User not found")
@@ -118,7 +122,8 @@ class UserResource(Resource):
 
         try:
             updated_user = facade.update_user(user_id, user_data)
-            return updated_user.to_dict(), 204
         
         except ValueError as e:
             return {"error": str(e)}, 400
+
+        return updated_user.to_dict(), 204

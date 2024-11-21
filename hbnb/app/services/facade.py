@@ -89,7 +89,7 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity_to_update
     
-    """def delete_amenity(self, amenity_id):
+    def delete_amenity(self, amenity_id):
 
         amenity = self.get_amenity(amenity_id)
         if not amenity:
@@ -97,11 +97,11 @@ class HBnBFacade:
         
         try:
             self.amenity_repo.delete(amenity_id)
-            return True
 
         except Exception as e:
             raise ValueError(f"Deletion failed: {str(e)}")
-    """
+
+        return True
 
     def create_place(self, place_data):
         # Checking Owner existence

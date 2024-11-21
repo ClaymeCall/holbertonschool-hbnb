@@ -101,10 +101,10 @@ class PlaceResource(Resource):
             place_data = api.payload
             updated_place = facade.update_place(place_id, place_data)
 
-            return {"message": "Place updated successfully", "place":  updated_place.to_dict()}, 200
-
         except ValueError as e:
             return {"error": str(e)}, 400
+
+        return {"message": "Place updated successfully", "place":  updated_place.to_dict()}, 200
 
     @api.response(200, 'Place deleted successfully')
     @api.response(400, 'Bad request - May verify ID')
@@ -124,11 +124,13 @@ class PlaceResource(Resource):
 
             if not is_admin and place.owner.id != current_user["id"]:
                 return {"error": "Unauthorized action"}, 403
-            
-            return facade.delete_place(place_id), 200
+            else:
+                deletion_result = facade.delete_place(place_id)
         
         except ValueError as e:
                 return {"error": str(e)}, 400
+
+        return {"message": "Place deleted successfully", "place": deletion_result}, 200
 
 @api.route('/<place_id>/amenities')
 class PlaceAmenity(Resource):
@@ -154,11 +156,11 @@ class PlaceReviewList(Resource):
         """Retrieve a list of all reviews for a place"""
 
         try:
-            if facade.get_reviews_by_place(place_id):
-                return {"message": "List of review for the place retrieved successfully"}, 200
-
-            else:
+            reviews = facade.get_reviews_by_place(place_id)
+            if not reviews:
                 return {"error": "No reviews found for that place"}, 404
 
         except ValueError as e:
             return {"error": str(e)}, 404
+
+        return {"message": "List of reviews for the place retrieved successfully", "reviews": reviews}, 200
