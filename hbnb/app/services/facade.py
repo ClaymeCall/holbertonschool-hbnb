@@ -89,17 +89,19 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity_to_update
     
-    """def delete_amenity(self, amenity_id, current_user):
+    """def delete_amenity(self, amenity_id):
 
         amenity = self.get_amenity(amenity_id)
         if not amenity:
            raise ValueError("Amenity not found")
-
-        place = amenity.place
-        if not place or place.owner.id != current_user["id"]:
-            raise PermissionError("Not allowed: you are not the owner of this place"}, 403
         
-        self.amenity_repo.delete(amenity_id)"""
+        try:
+            self.amenity_repo.delete(amenity_id)
+            return True
+
+        except Exception as e:
+            raise ValueError(f"Deletion failed: {str(e)}")
+    """
 
     def create_place(self, place_data):
         # Checking Owner existence
