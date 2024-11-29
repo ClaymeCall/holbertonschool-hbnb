@@ -1,0 +1,53 @@
+/*
+  This is a SAMPLE File to get you started. Follow the instructions on the project to complete the tasks.
+  You'll probably need to override some of these styles.
+*/
+
+:root {
+    --primary-color: #333;
+    --secondary-color: #fff;
+    --background-color: #f4f4f4;
+    --padding: 1rem;
+    --font-family: Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+header {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: var(--padding);
+}
+
+nav a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    margin-left: var(--padding);
+}
+
+main {
+    padding: calc(var(--padding) * 2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav a {
+        display: block;
+        margin: 0.5rem 0;
+    }
+
+    main {
+        padding: var(--padding);
+    }
+}
+
