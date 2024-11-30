@@ -7,19 +7,42 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <header>
+        <img src="logo.png" alt="HbnB Logo" class="logo">
+        <nav>
+            <a href="login.html" id="login-link" class="login-button">Home</a>
+        </nav>
+    </header>
+
     <main>
         <!-- Add something to idfentify the place you're reviewing -->
         <form id="review-form">
             <h2>Add a Review</h2>
             <label for="review">Your Review:</label>
             <textarea id="review" name="review" required></textarea>
+
             <label for="rating">Rating:</label>
             <select id="rating" name="rating" required>
-                <!-- Options for rating -->
+                <option value="">Select a rating</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Star</option>
+                <option value="3">3 Star</option>
+                <option value="4">4 Star</option>
+                <option value="5">5 Star</option>
             </select>
             <button type="submit">Submit Review</button>
         </form>
     </main>
+
+    <footer>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">login</a>
+            <!-- <a href="#">Contact</a> -->
+        </nav>
+    </footer>
+
     <script src="scripts.js"></script>
 </body>
 </html>

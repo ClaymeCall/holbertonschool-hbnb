@@ -8,21 +8,46 @@
 </head>
 <body>
     <header>
+        <img src="logo.png" alt="HbnB Logo" class="logo">
         <nav>
-            <a href="login.html" id="login-link">Login</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
         </nav>
     </header>
     <main>
-        <section id="filter">
+        <div id="filter">
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
+                <option value="">Select max price</option>
                 <!-- Options will be populated dynamically -->
             </select>
-        </section>
+        </div>
         <section id="places-list">
             <!-- List of places will be populated dynamically -->
+
+            <!-- Static implementation not used:
+             <div class="place-card">
+                <h3>Capri Oceanview TinyHouse</h3>
+                <p>Price per night: 200€</p>
+                <button class="details-button">View Details</button>
+             </div>
+             <div class="place-card">
+                <h3>New-York CentralPark RoofTopLoft </h3>
+                <p>Price per night: 600€</p>
+                <button class="details-button">View Details</button>
+             </div>
+             <div class="place-card">
+                <h3>Montcuq-en-Couseran Bubble Tent Pyrennees view</h3>
+                <p>Price per night: 60€</p>
+                <button class="details-button">View Details</button>
+             </div> -->
         </section>
     </main>
+    <footer>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">login</a>
+        </nav>
+    </footer>
     <script src="scripts.js"></script>
 </body>
 </html>
